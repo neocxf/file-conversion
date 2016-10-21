@@ -5,11 +5,14 @@
 <head>
     <title>Maven + Spring MVC + @JavaConfig</title>
 
-    <spring:url value="/resources/core/css/hello.css" var="coreCss" />
-    <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss" />
+    <spring:url value="/css/hello.css" var="coreCss" />
+    <spring:url value="/css/bootstrap.min.css" var="bootstrapCss" />
     <link href="${bootstrapCss}" rel="stylesheet" />
     <link href="${coreCss}" rel="stylesheet" />
+    <link href="css/hello.css" rel="stylesheet" />
 </head>
+
+<h1>This is a test</h1>
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -70,8 +73,8 @@
     </footer>
 </div>
 
-<spring:url value="/resources/core/css/hello.js" var="coreJs" />
-<spring:url value="/resources/core/css/bootstrap.min.js" var="bootstrapJs" />
+<spring:url value="/js/hello.js" var="coreJs" />
+<spring:url value="/css/bootstrap.min.js" var="bootstrapJs" />
 
 <script src="${coreJs}"></script>
 <script src="${bootstrapJs}"></script>

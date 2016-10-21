@@ -1,5 +1,6 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
+import com.derbysoft.dhp.fileserver.core.util.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,16 +29,23 @@ public class PhantomjsClient {
             final ArrayList<String> commands = new ArrayList<>();
             commands.add(exec);
             commands.add(script);
+//            commands.add("-tmpdir");
+//            System.err.println("tmpoutput dir: {} " + TempDir.getOutputDir());
+//            commands.add("" + TempDir.getOutputDir());
             Stream.of(options).forEach(commands::add);
 
             logger.info("Thread.currentThread: {} " + Thread.currentThread().getName() + ", " + commands.toString());
 
 
             ProcessBuilder pb = new ProcessBuilder(commands);
-            pb.directory(new File("/home/fei/workspace/highcharts-export-server/tutorials"));
-            File log = new File("log");
-            pb.redirectErrorStream(true);
-            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
+
+            System.err.println(TempDir.getTmpDir().toFile());
+
+            pb.directory(TempDir.getOutputDir().toFile());
+//            pb.directory(new File("/home/fei/tmp"));
+//            File log = new File("log");
+//            pb.redirectErrorStream(true);
+//            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
 
             process = pb.start();
 
@@ -115,12 +123,11 @@ public class PhantomjsClient {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
 //        new PhantomjsClient("/usr/bin/phantomjs", "rasterize.js", "report_data_1.html", "report_data_2.pdf", "1920px");
-        new PhantomjsClient("/usr/bin/phantomjs", "rasterize.js", "http://www.youku.com", "youku.pdf", "1920px");
+        new PhantomjsClient("/usr/bin/phantomjs", "/home/fei/workspace/highcharts-export-server/tutorials/rasterize.js", "http://www.jd.com", "jd.pdf", "1920px");
 //        new PhantomjsClient("ls", "-a", "-l");
 //        new PhantomjsClient("/usr/bin/phantomjs", "/home/fei/workspace/starter/neo4j-parent/neo4j-web-starter2/src/main/resources/static/hello.js");
-
 
 
     }
