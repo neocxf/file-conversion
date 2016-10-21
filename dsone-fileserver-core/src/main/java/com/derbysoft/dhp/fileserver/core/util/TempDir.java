@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,6 +70,18 @@ public class TempDir {
         logger.debug("Highcharts Export Server using " +TempDir.getTmpDir() + " as TEMP folder.");
     }
 
+    @PostConstruct
+    public void copyResources() {
+        logger.info("------------------------- copying phantomjs related file to TEMP subfolder");
+
+        try {
+            FileUtils.copyFileToDirectory(new File(getClass().getClassLoader().getResource("rasterize.js").getFile()), getPhantomJsDir().toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static Path getTmpDir() {
         return tmpDir;
     }
@@ -79,6 +92,10 @@ public class TempDir {
 
     public static Path getPhantomJsDir() {
         return phantomJsDir;
+    }
+
+    public String getRasterizeJs() {
+        return getPhantomJsDir().toString() + File.separator + "rasterize.js";
     }
 
     public static String getDownloadLink(String filename) {

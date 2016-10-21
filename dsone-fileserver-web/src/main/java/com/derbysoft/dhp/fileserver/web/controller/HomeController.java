@@ -4,6 +4,7 @@ import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,9 @@ public class HomeController {
 
     public static final String PHANTOMJSAPPLICATION = System.getProperty("PHANTOMJSAPPLICATION", "/usr/local/bin/phantomjs");
     public static final String PHANTOMJSSCRIPT = System.getProperty("PHANTOMJSSCRIPT", "/usr/local/bin/phantom-renderer.js");
+
+    @Autowired
+    TempDir tempDir;
 
 
     @RequestMapping(value = "/demo", method = RequestMethod.GET)
@@ -57,7 +61,7 @@ public class HomeController {
 
         String targetFileName = fileName + "." + fileType;
 
-        new PhantomjsClient("/usr/bin/phantomjs", "/home/fei/workspace/highcharts-export-server/tutorials/rasterize.js", url, targetFileName, "1920px");
+        new PhantomjsClient("/usr/bin/phantomjs", tempDir.getRasterizeJs(), url, targetFileName, "1920px");
 
         String longFileName = TempDir.getOutputDir().toAbsolutePath().toString() + File.separator +  targetFileName;
 
