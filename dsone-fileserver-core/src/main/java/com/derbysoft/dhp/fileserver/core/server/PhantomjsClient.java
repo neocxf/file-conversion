@@ -4,7 +4,6 @@ import com.derbysoft.dhp.fileserver.core.util.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Stream;
@@ -22,7 +21,7 @@ public class PhantomjsClient {
 
         if (script.isEmpty()) {
 //			script = TempDir.getPhantomJsDir().toAbsolutePath().toString() + separator + "highcharts-convert.js";
-            script = "rasterize.js";
+            script = "com/derbysoft/dhp/fileserver/core/util/rasterize.js";
         }
 
         try {

@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,14 +74,19 @@ public class TempDir {
     }
 
     @PostConstruct
-    public void copyResources() {
+    public void copyResources() throws IOException  {
         logger.info("------------------------- copying phantomjs related file to TEMP subfolder");
 
-        try {
-            FileUtils.copyFileToDirectory(new File(getClass().getClassLoader().getResource("rasterize.js").getFile()), getPhantomJsDir().toFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//            URL jsUrl = getClass().getClassLoader().getResource("rasterize.js");
+
+//            URL jsUrl = TempDir.class.getClassLoader().getResource("rasterize.js");
+//            String url = Thread.currentThread().getContextClassLoader().getResource("rasterize.js").getFile();
+//            File file = new File(url);
+//            FileUtils.copyFileToDirectory(file, getPhantomJsDir().toFile() );
+
+
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("com/derbysoft/dhp/fileserver/core/util/rasterize.js");
+        FileUtils.copyInputStreamToFile(is, new File(getRasterizeJs()) );
 
     }
 
@@ -103,6 +111,17 @@ public class TempDir {
         return link;
     }
 
+    public static void main(String[] args) throws MalformedURLException {
+        String fileUrl = "file:/home/fei/.m2/repository/com/derbysoft/dhp/dsone-fileserver-core/1.0-SNAPSHOT/dsone-fileserver-core-1.0-SNAPSHOT.jar!/rasterize.js";
+//        String fileUrl = "file:/home/fei/.m2/repository/com/derbysoft/dhp/dsone-fileserver-core/1.0-SNAPSHOT/dsone-fileserver-core-1.0-SNAPSHOT.jar!/META-INF/MANIFEST.MF";
 
+//        UrlResource resource = new UrlResource(fileUrl);
+//
+//        System.out.println(resource.getFilename());
+//        System.out.println(resource.exists());
+
+        URL url = Thread.currentThread().getContextClassLoader().getResource("com/derbysoft/dhp/fileserver/core/util/rasterize.js");
+        System.out.println(url.getPath());
+    }
 
 }
