@@ -11,12 +11,14 @@ package com.derbysoft.dhp.fileserver.core.util;
 
 import java.util.EnumSet;
 
+/**
+ * utilities for customizing the MimeType
+ */
 public enum MimeType {
 	PNG("image/png", "png"),
 	JPEG("image/jpeg", "jpeg"),
-	PDF("application/pdf", "pdf"),
-	SVG("image/svg+xml", "svg");
-	
+	PDF("application/pdf", "pdf");
+
 	private String type;
 	private String extension;
 
@@ -41,25 +43,5 @@ public enum MimeType {
 		}
 		
 		return MimeType.PNG;
-		
-		/*Iterator it = lookup.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pair = (Map.Entry)it.next();
-			if 
-		}
-		
-		// Check first if we give in the name of the mime, like svg, png, pfd
-		MimeType mime = MimeType.valueOf(type.toUpperCase());
-		if (mime != null) {
-			return mime;
-		}
-
-		// if not matched above, check if we can lookup the mime based on the content-type
-		mime = lookup.get(type);
-		if (mime != null) {
-			return mime;
-		}
-		// else return default
-		return MimeType.PNG;*/
 	}
 }

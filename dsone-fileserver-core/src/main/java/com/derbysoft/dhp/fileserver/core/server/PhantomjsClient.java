@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -16,21 +17,77 @@ public class PhantomjsClient {
 
     private Process process;
 
+    public static class PhantomjsClientBuilder {
+        private String exec;
+        private String script;
+        private String url;
+        private String output;
+        private String size;
+
+        /**
+         *  build the PhantomjsClient
+         * @param exec Phantomjs execution context
+         * @param script the js file
+         * @param url the url of html page (both http url or file url are supported)
+         * @param output the output file name
+         */
+        public PhantomjsClientBuilder(String exec, String script, String url, String output) {
+            this.exec = exec;
+            this.script = script;
+            this.url = url;
+            this.output = output;
+        }
+
+        public PhantomjsClientBuilder(String url, String output) {
+            this.url = url;
+            this.output = output;
+        }
+
+        /**
+         *  additional configuration element for the build of the PhantomjsClient
+         * @param size the output file's pixels
+         * @return the builder
+         */
+        PhantomjsClientBuilder withSize(String size) {
+            this.size = size;
+            return this;
+        }
+
+        public PhantomjsClient create() throws IOException {
+            return new PhantomjsClient(this);
+        }
+
+    }
+
+    public PhantomjsClient(PhantomjsClientBuilder builder) throws IOException {
+        final ArrayList<String> commands = new ArrayList<>();
+        commands.add(builder.exec);
+        commands.add(builder.script);
+        commands.add(builder.url);
+        commands.add(builder.output);
+        commands.add(builder.size);
+
+
+        ProcessBuilder pb = new ProcessBuilder(commands);
+
+        logger.debug(" ------ tmp dir folder: {} " + TempDir.getTmpDir().toFile());
+
+        pb.directory(TempDir.getOutputDir().toFile());
+        process = pb.start();
+    }
+
     public PhantomjsClient(String exec, String script, String... options) {
 
 
         if (script.isEmpty()) {
 //			script = TempDir.getPhantomJsDir().toAbsolutePath().toString() + separator + "highcharts-convert.js";
-            script = "com/derbysoft/dhp/fileserver/core/util/rasterize.js";
+            script = "phantomjs/rasterize.js";
         }
 
         try {
             final ArrayList<String> commands = new ArrayList<>();
             commands.add(exec);
             commands.add(script);
-//            commands.add("-tmpdir");
-//            System.err.println("tmpoutput dir: {} " + TempDir.getOutputDir());
-//            commands.add("" + TempDir.getOutputDir());
             Stream.of(options).forEach(commands::add);
 
             logger.info("Thread.currentThread: {} " + Thread.currentThread().getName() + ", " + commands.toString());
@@ -38,15 +95,15 @@ public class PhantomjsClient {
 
             ProcessBuilder pb = new ProcessBuilder(commands);
 
-            System.err.println(TempDir.getTmpDir().toFile());
+            logger.debug(" ------ tmp dir folder: {} " + TempDir.getTmpDir().toFile());
 
             pb.directory(TempDir.getOutputDir().toFile());
 //            pb.directory(new File("/home/fei/tmp"));
 //            File log = new File("log");
 //            pb.redirectErrorStream(true);
 //            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
-
             process = pb.start();
+
 
 //			process = new ProcessBuilder(commands).start();
 //            final BufferedReader bufferedReader = new BufferedReader(
@@ -79,6 +136,28 @@ public class PhantomjsClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Process getProcess() {
+        return this.process;
+    }
+
+    /**
+     *  wait indefinitely for the subprocess to end
+     * @return return value of the subprocess
+     * @throws InterruptedException
+     */
+    public int await() throws InterruptedException {
+        return process.waitFor();
+    }
+
+    /**
+     *  wait for the given time for the subprocess to done
+     * @param sec seconds that wait for
+     * @throws InterruptedException
+     */
+    public boolean await(int sec) throws InterruptedException {
+        return process.waitFor(sec, TimeUnit.SECONDS);
     }
 
 //    public String request(String params) throws SocketTimeoutException, SVGConverterException, TimeoutException {
