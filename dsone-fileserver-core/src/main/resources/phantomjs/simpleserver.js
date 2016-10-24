@@ -14,6 +14,12 @@ if (system.args.length !== 2) {
         console.log('Request at ' + new Date());
         console.log(JSON.stringify(request, null, 4));
 
+        var params = JSON.parse(request.post);
+
+        console.log(params.url);
+        console.log(params.type);
+        console.log(request.headers.Accept);
+
         response.statusCode = 200;
         response.headers = {
             'Cache': 'no-cache',
