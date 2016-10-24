@@ -29,8 +29,6 @@ public class HomeController {
 
     @RequestMapping(value = "/output-report", method = RequestMethod.GET)
     public void printWelcome(@RequestParam(value = "type", required = false, defaultValue = "pdf") String extension , HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println(" going to redirect to hello.jsp");
-
 
         HttpServletResponseWrapper responseWrapper = new ServletStringWrapper(resp);
 
@@ -49,9 +47,7 @@ public class HomeController {
 
     @RequestMapping(value = "/report", method = RequestMethod.GET)
     public String report(ModelMap model, HttpServletRequest req, HttpServletResponse resp) {
-        System.out.println(" going to redirect to report.jsp");
         model.addAttribute("message", "Hello, this file is actually a report file");
-
         return "report";
     }
 

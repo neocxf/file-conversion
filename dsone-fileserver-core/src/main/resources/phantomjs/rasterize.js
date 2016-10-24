@@ -35,15 +35,53 @@ if (system.args.length < 3 || system.args.length > 5) {
     if (system.args.length > 4) {
         page.zoomFactor = system.args[4];
     }
-    page.open(address, function (status) {
-        if (status !== 'success') {
-            console.log('Unable to load the address!');
-            phantom.exit(1);
-        } else {
-            window.setTimeout(function () {
-                page.render(output);
-                phantom.exit();
-            }, 200);
-        }
-    });
+
+    // the original impl
+    // page.open(address, function (status) {
+    //     if (status !== 'success') {
+    //         console.log('Unable to load the address!');
+    //         phantom.exit(1);
+    //     } else {
+    //         window.setTimeout(function () {
+    //             page.render(output);
+    //             phantom.exit();
+    //         }, 200);
+    //     }
+    // });
+
+    page.open(address);
+
+    page.onLoadFinished = function(status) {
+        page.render(output);
+        phantom.exit();
+    };
+
+    // see http://stackoverflow.com/questions/11340038/phantomjs-not-waiting-for-full-page-load
+    //noinspection JSAnnotator
+    // function onPageReady() {
+    //     var htmlContent = page.evaluate(function () {
+    //         return document.documentElement.outerHTML;
+    //     });
+    //
+    //     page.render(htmlContent);
+    //     phantom.exit();
+    // }
+    //
+    // page.open(address, function (status) {
+    //     function checkReadyState() {
+    //         setTimeout(function () {
+    //             var readyState = page.evaluate(function () {
+    //                 return document.readyState;
+    //             });
+    //
+    //             if ("complete" === readyState) {
+    //                 onPageReady();
+    //             } else {
+    //                 checkReadyState();
+    //             }
+    //         });
+    //     }
+    //
+    //     checkReadyState();
+    // })
 }

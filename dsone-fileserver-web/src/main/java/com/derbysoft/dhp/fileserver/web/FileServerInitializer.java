@@ -2,10 +2,10 @@ package com.derbysoft.dhp.fileserver.web;
 
 import com.derbysoft.dhp.fileserver.web.config.SpringWebConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 
-import javax.servlet.*;
-import java.util.EnumSet;
+import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 /**
  *  entry point of annotation-based servlet 3.0 container.
