@@ -5,11 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *  maintain the lifecycle of the PhantomjsClient
@@ -25,20 +25,25 @@ public class PhantomjsObjectFactory implements ObjectFactory<PhantomjsClient> {
     private String exec;
     @Value("${phantomjs.script}")
     private String script;
+    @Value("${phantomjs.host}")
+    private String host;
+    @Value("${phantomjs.port}")
+    private int port;
     @Value("${phantomjs.outputsize}")
     private String size;
+
+    private AtomicInteger counter = new AtomicInteger(0);
 
     @Autowired
     private TempDir tempDir;
 
     @Override
-    public PhantomjsClient create(String url, String destFile) throws IOException {
+    public PhantomjsClient create() throws IOException {
         String longScript = tempDir.getLongScriptName(script);
 
-        logger.debug("in makeObject, exec: " + exec + ", script: " +  script + ", url: " +  url + ", destFile: " + destFile + ", outputsize: " + size);
-
-        PhantomjsClient client = new PhantomjsClient.PhantomjsClientBuilder(exec, longScript, url, destFile).withSize(size).create();
-
+//        logger.debug("in makeObject, exec: " + exec + ", script: " +  script + ", url: " +  url + ", destFile: " + destFile + ", outputsize: " + size);
+        int generatedPort = port + counter.getAndIncrement();
+        PhantomjsClient client = new PhantomjsClient.PhantomjsClientBuilder(exec, longScript, host, generatedPort).create();
         return client;
     }
 

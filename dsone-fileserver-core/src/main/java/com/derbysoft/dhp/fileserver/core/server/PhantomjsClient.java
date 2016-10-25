@@ -5,16 +5,17 @@ import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.SocketUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 /**
@@ -25,41 +26,32 @@ public class PhantomjsClient {
 
     private Process process;
 
+    private int bindingPort = -1;
+
     public static class PhantomjsClientBuilder {
         private String exec;
         private String script;
-        private String url;
-        private String output;
-        private String size;
-
+        private String host;
+        private int port;
         /**
          *  build the PhantomjsClient
          * @param exec Phantomjs execution context
          * @param script the js file
-         * @param url the url of html page (both http url or file url are supported)
-         * @param output the output file name
          */
-        public PhantomjsClientBuilder(String exec, String script, String url, String output) {
+        public PhantomjsClientBuilder(String exec, String script) {
             this.exec = exec;
             this.script = script;
-            this.url = url;
-            this.output = output;
+            this.host = "127.0.0.1";
+            this.port = SocketUtils.findAvailableTcpPort();
         }
 
-        public PhantomjsClientBuilder(String url, String output) {
-            this.url = url;
-            this.output = output;
+        public PhantomjsClientBuilder(String exec, String script, String host, int port) {
+            this.exec = exec;
+            this.script = script;
+            this.host = host;
+            this.port = port;
         }
 
-        /**
-         *  additional configuration element for the build of the PhantomjsClient
-         * @param size the output file's pixels
-         * @return the builder
-         */
-        PhantomjsClientBuilder withSize(String size) {
-            this.size = size;
-            return this;
-        }
 
         public PhantomjsClient create() throws IOException {
             return new PhantomjsClient(this);
@@ -71,9 +63,8 @@ public class PhantomjsClient {
         final ArrayList<String> commands = new ArrayList<>();
         commands.add(builder.exec);
         commands.add(builder.script);
-        commands.add(builder.url);
-        commands.add(builder.output);
-        commands.add(builder.size);
+        commands.add("" + builder.port);
+        Stream.of(commands).forEach(System.out::println);
 
 
         ProcessBuilder pb = new ProcessBuilder(commands);
@@ -82,9 +73,20 @@ public class PhantomjsClient {
 
         pb.directory(TempDir.getOutputDir().toFile());
         process = pb.start();
+
+        final BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(process.getInputStream()));
+        String readLine = bufferedReader.readLine();
+        if (readLine == null || !readLine.contains("READY")) {
+            logger.warn("Command starting Phantomjs failed");
+            process.destroy();
+            throw new RuntimeException("Error, PhantomJS couldnot start");
+        }
+
+        bindingPort = builder.port;
     }
 
-    public PhantomjsClient(String exec, String script, String... options) {
+    private PhantomjsClient(String exec, String script, String... options) {
 
 
         if (script.isEmpty()) {
@@ -150,6 +152,10 @@ public class PhantomjsClient {
         return this.process;
     }
 
+    public int getBindingPort() {
+        return bindingPort;
+    }
+
     /**
      *  wait indefinitely for the subprocess to end
      * @return return value of the subprocess
@@ -168,41 +174,72 @@ public class PhantomjsClient {
         return process.waitFor(sec, TimeUnit.SECONDS);
     }
 
-    public static String request(String params) throws SocketTimeoutException, TimeoutException {
-        String response = "";
-        String host = "localhost";
-        int port = 8088;
+    public ResponseEntity request(String params) throws SocketTimeoutException, TimeoutException {
+        ResponseEntity entity = new ResponseEntity();
+        String host = "127.0.0.1";
+        int port = getBindingPort();
         int connectTimeout = 5000;
-        int readTimeout = 5000;
+        int readTimeout = 10000;
 
         try {
             URL url = new URL("http://" + host + ":"
                     + port + "/");
 
-            // TEST with running a local phantom instance
-            // url = new URL("http://" + host + ":7777/");
-            // logger.log(Level.INFO, "requesting url: " + url.toString());
-            // logger.log(Level.INFO, "parameters: " +  params);
-
-
-            URLConnection connection = url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setConnectTimeout(connectTimeout);
             connection.setReadTimeout(readTimeout);
             connection.setRequestProperty("Content-Type", "application/json");
+            connection.setInstanceFollowRedirects(false);
 
             OutputStream out = connection.getOutputStream();
             out.write(params.getBytes("utf-8"));
             out.close();
             InputStream in = connection.getInputStream();
-            response = IOUtils.toString(in, "utf-8");
-
+            String response = IOUtils.toString(in, "utf-8");
+            entity.setStatusCode(connection.getResponseCode());
+            entity.setResponse(response);
+            System.out.println(" the response is: " + connection.getResponseMessage() + ", " + connection.getResponseCode());
             in.close();
         } catch (SocketTimeoutException ste) {
             throw new SocketTimeoutException(ste.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
         }
-        return response;
+        return entity;
+    }
+
+    public static class ResponseEntity {
+        private int statusCode = -1;
+        private String response;
+
+
+        public ResponseEntity() {
+        }
+        public ResponseEntity(int statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        public ResponseEntity(int statusCode, String response) {
+            this.statusCode = statusCode;
+            this.response = response;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        public String getResponse() {
+            return response;
+        }
+
+        public void setResponse(String response) {
+            this.response = response;
+        }
     }
 
     private void initialize() {
@@ -215,22 +252,40 @@ public class PhantomjsClient {
 //        new PhantomjsClient("ls", "-a", "-l");
 //        new PhantomjsClient("/usr/bin/phantomjs", "/home/fei/workspace/starter/neo4j-parent/neo4j-web-starter2/src/main/resources/static/hello.js");
         Gson gson = new Gson();
-        ConverterConfig config = new ConverterConfig("http://www.baidu.com", "pdf");
+        ConverterConfig config = new ConverterConfig("http://www.baidu.com", "baidu.pdf");
+//        ConverterConfig config = new ConverterConfig("http://www.csdn.net", "csdn.pdf");
+//        ConverterConfig config = new ConverterConfig("http://www.sdsdsdsd/asas", "nosuchdomain1.pdf");
         String configStr = gson.toJson(config);
         System.out.println(configStr);
-        request(configStr);
+//        ResponseEntity entity = request(configStr);
+//        System.out.println(responseCode);
     }
 
-    private static class ConverterConfig {
+    public static class ConverterConfig {
         private String url;
-        private String type;
+        private String fileName;
+        private String outputSize = "1920px";
+        private String zoom = "1";
 
         public ConverterConfig() {
         }
 
-        public ConverterConfig(String url, String type) {
+        public ConverterConfig(String url, String fileName) {
             this.url = url;
-            this.type = type;
+            this.fileName = fileName;
+        }
+
+        public ConverterConfig(String url, String fileName, String outputSize) {
+            this.url = url;
+            this.fileName = fileName;
+            this.outputSize = outputSize;
+        }
+
+        public ConverterConfig(String url, String fileName, String outputSize, String zoom) {
+            this.url = url;
+            this.fileName = fileName;
+            this.outputSize = outputSize;
+            this.zoom = zoom;
         }
 
         public String getUrl() {
@@ -241,12 +296,28 @@ public class PhantomjsClient {
             this.url = url;
         }
 
-        public String getType() {
-            return type;
+        public String getFileName() {
+            return fileName;
         }
 
-        public void setType(String type) {
-            this.type = type;
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public String getOutputSize() {
+            return outputSize;
+        }
+
+        public void setOutputSize(String outputSize) {
+            this.outputSize = outputSize;
+        }
+
+        public String getZoom() {
+            return zoom;
+        }
+
+        public void setZoom(String zoom) {
+            this.zoom = zoom;
         }
     }
 }

@@ -3,9 +3,11 @@ package com.derbysoft.dhp.fileserver.web.controller;
 import com.derbysoft.dhp.fileserver.core.server.ObjectFactory;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClientCache;
+import com.derbysoft.dhp.fileserver.core.server.ServicePoolExecutor;
 import com.derbysoft.dhp.fileserver.core.util.FileUtilsWrapper;
 import com.derbysoft.dhp.fileserver.core.util.MimeType;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
+import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -36,11 +41,14 @@ public class FileConverterController {
     @Autowired
     ObjectFactory<PhantomjsClient> objectFactory;
 
+    @Autowired
+    ServicePoolExecutor servicePoolExecutor;
+
     @RequestMapping(value = "/html/{fileType}", method = RequestMethod.GET)
     public void convertUrlToHtml(HttpServletRequest request, HttpServletResponse response,
                                  @PathVariable("fileType") String fileType,
                                  @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
-                                 @RequestParam("url") String url) throws IOException, InterruptedException {
+                                 @RequestParam("url") String url) throws IOException, InterruptedException, TimeoutException, ExecutionException {
 
         String targetFileName = "";
 
@@ -56,12 +64,23 @@ public class FileConverterController {
             } else
                 targetFileName = fileName + "." + fileExtension;
 
-            PhantomjsClient client = objectFactory.create(url, targetFileName);
+            PhantomjsClient.ConverterConfig config = new PhantomjsClient.ConverterConfig(url, targetFileName);
 
-            int exitStatus = client.await();  //do a wait here to prevent it running for ever
+            Gson gson = new Gson();
 
-            if (exitStatus != 0) {
-                logger.error("EXIT-STATUS - " + client.getProcess().toString()); // error handling
+            String jsonStr = gson.toJson(config);
+
+            System.out.println(jsonStr);
+
+            Future<PhantomjsClient.ResponseEntity> future = servicePoolExecutor.submit(jsonStr);
+
+            int responseCode = future.get().getStatusCode();
+
+            System.out.println(" responseCode: {} " + responseCode);
+//            int exitStatus = client.await();  //do a wait here to prevent it running for ever
+
+            if (responseCode != 200) {
+                logger.error("EXIT-STATUS - "); // error handling
             } else {
                 PhantomjsClientCache.store(url, targetFileName);
             }
