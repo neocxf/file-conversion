@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.SocketUtils;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *  maintain the lifecycle of the PhantomjsClient
@@ -29,10 +29,12 @@ public class PhantomjsObjectFactory implements ObjectFactory<PhantomjsClient> {
     private String host;
     @Value("${phantomjs.port}")
     private int port;
+    @Value("${phantomjs.connecttimeout}")
+    private int connectTimeout;
+    @Value("${phantomjs.readtimeout}")
+    private int readTimeout;
     @Value("${phantomjs.outputsize}")
     private String size;
-
-    private AtomicInteger counter = new AtomicInteger(0);
 
     @Autowired
     private TempDir tempDir;
@@ -42,28 +44,28 @@ public class PhantomjsObjectFactory implements ObjectFactory<PhantomjsClient> {
         String longScript = tempDir.getLongScriptName(script);
 
 //        logger.debug("in makeObject, exec: " + exec + ", script: " +  script + ", url: " +  url + ", destFile: " + destFile + ", outputsize: " + size);
-        int generatedPort = port + counter.getAndIncrement();
+        int generatedPort = SocketUtils.findAvailableTcpPort(port);;
         PhantomjsClient client = new PhantomjsClient.PhantomjsClientBuilder(exec, longScript, host, generatedPort).create();
         return client;
     }
 
     @Override
-    public boolean validate(PhantomjsClient object) {
+    public boolean validate(PhantomjsClient client) {
         return false;
     }
 
     @Override
-    public void destroy(PhantomjsClient object) {
+    public void destroy(PhantomjsClient client) {
+        client.destory();
+    }
+
+    @Override
+    public void activate(PhantomjsClient client) {
 
     }
 
     @Override
-    public void activate(PhantomjsClient object) {
-
-    }
-
-    @Override
-    public void passivate(PhantomjsClient Object) {
+    public void passivate(PhantomjsClient client) {
 
     }
 }

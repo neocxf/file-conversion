@@ -27,9 +27,11 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 
     /**
      *  activate the @Value annotation
+     *  <strong>ATTENTION</strong> for BeanFactoryPostProcessor-returning @Bean methods
+     *  http://stackoverflow.com/questions/14942304/springs-javaconfig-and-customscopeconfigurer-issue
      */
     @Bean
-    public PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 

@@ -26,38 +26,11 @@ public class PhantomjsClient {
 
     private Process process;
 
+    private String host = "127.0.0.1";
     private int bindingPort = -1;
+    private int connectTimeout = 5000;
+    private int readTimeout = 10000;
 
-    public static class PhantomjsClientBuilder {
-        private String exec;
-        private String script;
-        private String host;
-        private int port;
-        /**
-         *  build the PhantomjsClient
-         * @param exec Phantomjs execution context
-         * @param script the js file
-         */
-        public PhantomjsClientBuilder(String exec, String script) {
-            this.exec = exec;
-            this.script = script;
-            this.host = "127.0.0.1";
-            this.port = SocketUtils.findAvailableTcpPort();
-        }
-
-        public PhantomjsClientBuilder(String exec, String script, String host, int port) {
-            this.exec = exec;
-            this.script = script;
-            this.host = host;
-            this.port = port;
-        }
-
-
-        public PhantomjsClient create() throws IOException {
-            return new PhantomjsClient(this);
-        }
-
-    }
 
     public PhantomjsClient(PhantomjsClientBuilder builder) throws IOException {
         final ArrayList<String> commands = new ArrayList<>();
@@ -86,100 +59,48 @@ public class PhantomjsClient {
         bindingPort = builder.port;
     }
 
-    private PhantomjsClient(String exec, String script, String... options) {
-
-
-        if (script.isEmpty()) {
-//			script = TempDir.getPhantomJsDir().toAbsolutePath().toString() + separator + "highcharts-convert.js";
-            script = "phantomjs/rasterize.js";
-        }
-
-        try {
-            final ArrayList<String> commands = new ArrayList<>();
-            commands.add(exec);
-            commands.add(script);
-            Stream.of(options).forEach(commands::add);
-
-            logger.info("Thread.currentThread: {} " + Thread.currentThread().getName() + ", " + commands.toString());
-
-
-            ProcessBuilder pb = new ProcessBuilder(commands);
-
-            logger.debug(" ------ tmp dir folder: {} " + TempDir.getTmpDir().toFile());
-
-            pb.directory(TempDir.getOutputDir().toFile());
-//            pb.directory(new File("/home/fei/tmp"));
-//            File log = new File("log");
-//            pb.redirectErrorStream(true);
-//            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(log));
-            process = pb.start();
-
-
-//			process = new ProcessBuilder(commands).start();
-//            final BufferedReader bufferedReader = new BufferedReader(
-//                    new InputStreamReader(process.getInputStream()));
-//            String readLine = bufferedReader.readLine();
-//            if (readLine == null || !readLine.contains("ready")) {
-//                logger.warn("Command starting Phantomjs failed");
-//                process.destroy();
-////                throw new RuntimeException("Error, PhantomJS couldnot start");
-//            }
-//
-//            initialize();
-//
-//            Runtime.getRuntime().addShutdownHook(new Thread() {
-//                @Override
-//                public void run() {
-//                    if (process != null) {
-//                        logger.warn( "Shutting down PhantomJS instance, kill process directly, {0}", this.toString());
-//                        try {
-//                            process.getErrorStream().close();
-//                            process.getInputStream().close();
-//                            process.getOutputStream().close();
-//                        } catch (IOException e) {
-//                            logger.warn("Error while shutting down process: {0}", e.getMessage());
-//                        }
-//                        process.destroy();
-//                    }
-//                }
-//            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public Process getProcess() {
         return this.process;
+    }
+
+    public String getHost() {
+        return host;
     }
 
     public int getBindingPort() {
         return bindingPort;
     }
 
-    /**
-     *  wait indefinitely for the subprocess to end
-     * @return return value of the subprocess
-     * @throws InterruptedException
-     */
-    public int await() throws InterruptedException {
-        return process.waitFor();
+    public int getConnectTimeout() {
+        return connectTimeout;
     }
 
-    /**
-     *  wait for the given time for the subprocess to done
-     * @param sec seconds that wait for
-     * @throws InterruptedException
-     */
-    public boolean await(int sec) throws InterruptedException {
-        return process.waitFor(sec, TimeUnit.SECONDS);
+    public int getReadTimeout() {
+        return readTimeout;
     }
+
+    public void destory() {
+        try {
+			/* It's not enough to only destroy the process, this helps*/
+            process.getErrorStream().close();
+            process.getInputStream().close();
+            process.getOutputStream().close();
+        } catch (IOException e) {
+            logger.warn("Error while shutting down process: {0}", e.getMessage());
+        }
+
+        process.destroy();
+        process = null;
+        logger.info(String.format("Destroyed phantomJS process running on port %d", getBindingPort()));
+    }
+
 
     public ResponseEntity request(String params) throws SocketTimeoutException, TimeoutException {
         ResponseEntity entity = new ResponseEntity();
         String host = "127.0.0.1";
         int port = getBindingPort();
-        int connectTimeout = 5000;
-        int readTimeout = 10000;
+        int connectTimeout = getConnectTimeout();
+        int readTimeout = getReadTimeout();
 
         try {
             URL url = new URL("http://" + host + ":"
@@ -199,7 +120,7 @@ public class PhantomjsClient {
             String response = IOUtils.toString(in, "utf-8");
             entity.setStatusCode(connection.getResponseCode());
             entity.setResponse(response);
-            System.out.println(" the response is: " + connection.getResponseMessage() + ", " + connection.getResponseCode());
+            System.out.println("Phantomjs Client serve at port{} " + getBindingPort()  + " give the response: " + connection.getResponseMessage() + ", " + connection.getResponseCode());
             in.close();
         } catch (SocketTimeoutException ste) {
             throw new SocketTimeoutException(ste.getMessage());
@@ -242,7 +163,51 @@ public class PhantomjsClient {
         }
     }
 
-    private void initialize() {
+    public static class PhantomjsClientBuilder {
+        private String exec;
+        private String script;
+        private String host;
+        private int port;
+        private int connectTimeout;
+        private int readTimeout;
+
+        /**
+         *  build the PhantomjsClient
+         * @param exec Phantomjs execution context
+         * @param script the js file
+         */
+        public PhantomjsClientBuilder(String exec, String script) {
+            this.exec = exec;
+            this.script = script;
+            this.host = "127.0.0.1";
+            this.port = SocketUtils.findAvailableTcpPort();
+        }
+
+        public PhantomjsClientBuilder(String exec, String script, String host, int port) {
+            this.exec = exec;
+            this.script = script;
+            this.host = host;
+            this.port = port;
+        }
+
+        public PhantomjsClientBuilder withHost(String host) {
+            this.host = host;
+            return this;
+        }
+
+        public PhantomjsClientBuilder withConnectTimeout(int connectTimeout) {
+            this.connectTimeout = connectTimeout;
+            return this;
+        }
+
+        public PhantomjsClientBuilder withReadTimeout(int readTimeout) {
+            this.readTimeout = readTimeout;
+            return this;
+        }
+
+        public PhantomjsClient create() throws IOException {
+            return new PhantomjsClient(this);
+        }
 
     }
 

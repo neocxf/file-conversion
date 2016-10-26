@@ -14,13 +14,13 @@ import java.util.concurrent.TimeoutException;
  * @author neo.fei {neocxf@gmail.com}
  */
 @Component
-public class ServicePoolExecutor {
+public class PhantomjsServiceExecutor {
 
     @Autowired
     private AsyncTaskExecutor executorPool;
 
     @Autowired
-    ServicePool<PhantomjsClient> servicePool;
+    ServiceQueue<PhantomjsClient> serviceQueue;
 
     public Future<ResponseEntity> submit(final String params) {
 
@@ -30,7 +30,7 @@ public class ServicePoolExecutor {
                 ResponseEntity entity = null;
                 PhantomjsClient client = null;
                 try {
-                    client = servicePool.borrowService();
+                    client = serviceQueue.borrowService();
 
                     entity = client.request(params);
 
@@ -39,7 +39,7 @@ public class ServicePoolExecutor {
                 } catch (InterruptedException | SocketTimeoutException | TimeoutException e) {
                     e.printStackTrace();
                 } finally {
-                    servicePool.offerService(client);
+                    serviceQueue.offerService(client);
                 }
 
                 return new ResponseEntity();

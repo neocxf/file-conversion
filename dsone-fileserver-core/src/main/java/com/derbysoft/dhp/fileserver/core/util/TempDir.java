@@ -13,6 +13,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,23 +29,14 @@ import java.nio.file.Paths;
  */
 @Component
 public class TempDir {
-    protected static Logger logger = LoggerFactory.getLogger(TempDir.class);
+    private static Logger logger = LoggerFactory.getLogger(TempDir.class);
 
-    public static Path tmpDir;
-    public static Path outputDir;
-    public static Path phantomJsDir;
-    public static TempDir tempDir;
+    private static Path tmpDir;
+    private static Path outputDir;
+    private static Path phantomJsDir;
 
-    static {
-        try {
-            tempDir = new TempDir();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public TempDir() throws IOException {
-
         tmpDir = Files.createTempDirectory("export");
 
         // Delete this directory on deletion of the JVM
@@ -63,14 +55,7 @@ public class TempDir {
             }
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                FileUtils.deleteQuietly(tmpDir.toFile());
-            }
-        });
-
-        logger.debug("Highcharts Export Server using " +TempDir.getTmpDir() + " as TEMP folder.");
+        logger.debug("Dsone File Server using " +TempDir.getTmpDir() + " as TEMP folder.");
     }
 
     /**
@@ -128,7 +113,11 @@ public class TempDir {
         }
     }
 
-
+    @PreDestroy
+    public void destroy() throws Exception {
+        logger.debug(" deleting all temp file in " + tmpDir.toString());
+        FileUtils.deleteQuietly(tmpDir.toFile());
+    }
 
     public static Path getTmpDir() {
         return tmpDir;
@@ -166,5 +155,6 @@ public class TempDir {
         URL url = Thread.currentThread().getContextClassLoader().getResource("phantomjs/rasterize.js");
         System.out.println(url.getPath());
     }
+
 
 }

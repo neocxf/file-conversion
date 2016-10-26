@@ -3,7 +3,7 @@ package com.derbysoft.dhp.fileserver.web.controller;
 import com.derbysoft.dhp.fileserver.core.server.ObjectFactory;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClientCache;
-import com.derbysoft.dhp.fileserver.core.server.ServicePoolExecutor;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsServiceExecutor;
 import com.derbysoft.dhp.fileserver.core.util.FileUtilsWrapper;
 import com.derbysoft.dhp.fileserver.core.util.MimeType;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
@@ -25,7 +25,6 @@ import java.io.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author neo.fei {neocxf@gmail.com}
@@ -42,7 +41,7 @@ public class FileConverterController {
     ObjectFactory<PhantomjsClient> objectFactory;
 
     @Autowired
-    ServicePoolExecutor servicePoolExecutor;
+    PhantomjsServiceExecutor phantomjsServiceExecutor;
 
     @RequestMapping(value = "/html/{fileType}", method = RequestMethod.GET)
     public void convertUrlToHtml(HttpServletRequest request, HttpServletResponse response,
@@ -72,12 +71,9 @@ public class FileConverterController {
 
             System.out.println(jsonStr);
 
-            Future<PhantomjsClient.ResponseEntity> future = servicePoolExecutor.submit(jsonStr);
+            Future<PhantomjsClient.ResponseEntity> future = phantomjsServiceExecutor.submit(jsonStr);
 
             int responseCode = future.get().getStatusCode();
-
-            System.out.println(" responseCode: {} " + responseCode);
-//            int exitStatus = client.await();  //do a wait here to prevent it running for ever
 
             if (responseCode != 200) {
                 logger.error("EXIT-STATUS - "); // error handling
@@ -95,7 +91,7 @@ public class FileConverterController {
         } else
             response.setHeader("Content-type", mimeType.getType());
 
-        /**
+        /*
          *  if we want the file type to be downloadable, you can switch the following one line on
          */
 //        response.setHeader("Content-Disposition", "attachment; filename=" + targetFileName);

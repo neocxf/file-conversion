@@ -81,7 +81,7 @@ if (system.args.length !== 2) {
                     + "\": " + page.reason
                 );
 
-                response.statusCode = 408;
+                response.statusCode = 404;
 
                 response.write('<html>');
                 response.write('<head>');

@@ -1,5 +1,6 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  * @author neo.fei {neocxf@gmail.com}
  */
 @Component
-public class ServicePool<T> implements InitializingBean{
+public class ServiceQueue<T> implements InitializingBean, DisposableBean{
     private static final int DEFAULT_QUEUE_SIZE = 3;
     private final BlockingQueue<T> queue ;
     private final int size;
@@ -20,11 +21,11 @@ public class ServicePool<T> implements InitializingBean{
     @Autowired
     ObjectFactory<T> objectFactory;
 
-    public ServicePool() throws IOException, InterruptedException {
+    public ServiceQueue() throws IOException, InterruptedException {
         this(DEFAULT_QUEUE_SIZE);
     }
 
-    public ServicePool(int size) throws IOException, InterruptedException {
+    public ServiceQueue(int size) throws IOException, InterruptedException {
         this.queue = new LinkedBlockingDeque<T>(size);
         this.size = size;
     }
@@ -33,7 +34,7 @@ public class ServicePool<T> implements InitializingBean{
     /**
      *  blocking to borrow the service
      *
-     * @return
+     * @return the client
      * @throws InterruptedException
      */
     public T borrowService() throws InterruptedException {
@@ -42,7 +43,7 @@ public class ServicePool<T> implements InitializingBean{
 
     /**
      *  added the service
-     * @param t
+     * @param t client
      * @throws InterruptedException
      */
     public void offerService(T t) throws InterruptedException {
@@ -58,5 +59,14 @@ public class ServicePool<T> implements InitializingBean{
     @Override
     public void afterPropertiesSet() throws Exception {
         initialize();
+    }
+
+
+    @Override
+    public void destroy() throws Exception {
+
+        for (T elem : queue) {
+            objectFactory.destroy(elem);
+        }
     }
 }
