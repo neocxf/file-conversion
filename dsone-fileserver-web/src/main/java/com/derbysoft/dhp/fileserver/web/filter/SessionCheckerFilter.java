@@ -27,16 +27,16 @@ public class SessionCheckerFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        System.out.println(" --------------- Session checking whether the request is logged in-------------------");
+        System.out.println(" --------------- Session checking whether the compute is logged in-------------------");
 
         //
         // Check to see if user's session attribute contains an attribute
         // named AUTHENTICATED. If the attribute is not exists redirect
         // user to the login page.
         //
-//        if (!request.getRequestURI().endsWith("login.jsp") &&
-//                request.getSession().getAttribute("AUTHENTICATED") == null) {
-//            response.sendRedirect(request.getContextPath() + "/login.jsp");
+//        if (!compute.getRequestURI().endsWith("login.jsp") &&
+//                compute.getSession().getAttribute("AUTHENTICATED") == null) {
+//            response.sendRedirect(compute.getContextPath() + "/login.jsp");
 //        }
         chain.doFilter(req, res);
     }

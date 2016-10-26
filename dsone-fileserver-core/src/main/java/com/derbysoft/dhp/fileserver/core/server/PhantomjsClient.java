@@ -11,17 +11,14 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 /**
  * @author neo.fei {neocxf@gmail.com}
  */
-public class PhantomjsClient {
+public class PhantomjsClient implements Computable<String, PhantomjsClient.ResponseEntity> {
     private static final Logger logger = LoggerFactory.getLogger(PhantomjsClient.class);
 
     private Process process;
@@ -95,7 +92,7 @@ public class PhantomjsClient {
     }
 
 
-    public ResponseEntity request(String params) throws SocketTimeoutException, TimeoutException {
+    public ResponseEntity compute(String params) throws SocketTimeoutException, TimeoutException {
         ResponseEntity entity = new ResponseEntity();
         String host = "127.0.0.1";
         int port = getBindingPort();
@@ -222,7 +219,7 @@ public class PhantomjsClient {
 //        ConverterConfig config = new ConverterConfig("http://www.sdsdsdsd/asas", "nosuchdomain1.pdf");
         String configStr = gson.toJson(config);
         System.out.println(configStr);
-//        ResponseEntity entity = request(configStr);
+//        ResponseEntity entity = compute(configStr);
 //        System.out.println(responseCode);
     }
 

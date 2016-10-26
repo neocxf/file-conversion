@@ -6,7 +6,7 @@
 
     <groupId>com.derbysoft.dhp</groupId>
     <artifactId>dsone-fileserver-parent</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <modules>
         <module>dsone-fileserver-core</module>
         <module>dsone-fileserver-web</module>

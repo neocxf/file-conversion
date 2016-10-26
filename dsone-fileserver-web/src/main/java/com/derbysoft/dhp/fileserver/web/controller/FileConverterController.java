@@ -6,6 +6,7 @@ import com.derbysoft.dhp.fileserver.core.server.PhantomjsClientCache;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsServiceExecutor;
 import com.derbysoft.dhp.fileserver.core.util.FileUtilsWrapper;
 import com.derbysoft.dhp.fileserver.core.util.MimeType;
+import com.derbysoft.dhp.fileserver.core.util.RegexUtils;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
@@ -54,6 +55,10 @@ public class FileConverterController {
         MimeType mimeType = MimeType.get(fileType); // return the MimeType enum object. if the filetype is unknown, return the PNG
 
         String fileExtension = mimeType.getExtension();
+
+        if (! RegexUtils.isValidUrl(url)) {
+            throw new IllegalArgumentException("illegal url: {} " + url);
+        }
 
         String cacheFileName = PhantomjsClientCache.get(url);
         if (cacheFileName.equals(PhantomjsClientCache.DEFAULT_FILENAME)) { // without the cache

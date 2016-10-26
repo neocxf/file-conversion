@@ -3,6 +3,7 @@ package com.derbysoft.dhp.fileserver.core.server;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -30,6 +31,7 @@ public class PhantomjsClientCache {
     public static String get(String url) {
         lock.lock();
 
+        FutureTask task;
         try {
             TwoTuple<String, Integer> cacheVal = resourceCache.get(url);
             if (cacheVal == null) {
