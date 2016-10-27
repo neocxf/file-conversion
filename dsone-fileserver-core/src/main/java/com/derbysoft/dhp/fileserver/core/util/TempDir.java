@@ -89,12 +89,13 @@ public class TempDir {
 
     @PostConstruct
     private void copyResources() {
-
+        logger.debug(" @PostConstruct method in TempDir called to copy all valid js file to tmp dir ...");
         URL u = getClass().getProtectionDomain().getCodeSource().getLocation();
         URLClassLoader jarLoader = new URLClassLoader(new URL[]{u}, Thread.currentThread().getContextClassLoader());
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(jarLoader);
         try {
             Resource[] resources = resolver.getResources("classpath*:/phantomjs/*.js*");
+            logger.debug(String.format(" found %d js files at /phantomjs directory", resources.length));
             for (Resource resource : resources) {
                 logger.debug("Copying " + resource.getFilename() + " to " + TempDir.getPhantomJsDir());
                 Path path = Paths.get(TempDir.getPhantomJsDir().toString(), resource.getFilename());
@@ -148,13 +149,5 @@ public class TempDir {
     public static String getDownloadLink(String filenameWithExtension) {
         return getOutputDir().toAbsolutePath().toString() + File.separator +  filenameWithExtension;
     }
-
-    public static void main(String[] args) throws MalformedURLException {
-        String fileUrl = "file:/home/fei/.m2/repository/com/derbysoft/dhp/dsone-fileserver-core/1.0-SNAPSHOT/dsone-fileserver-core-1.0-SNAPSHOT.jar!/rasterize.js";
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource("phantomjs/rasterize.js");
-        System.out.println(url.getPath());
-    }
-
 
 }

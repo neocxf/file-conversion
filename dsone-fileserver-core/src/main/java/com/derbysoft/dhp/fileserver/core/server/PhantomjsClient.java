@@ -1,5 +1,8 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
+import com.derbysoft.dhp.fileserver.core.cache.Computable;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
 import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
@@ -13,12 +16,13 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Stream;
 
 /**
+ *  interact with the Phantomjs linux client stub
+ *
  * @author neo.fei {neocxf@gmail.com}
  */
-public class PhantomjsClient implements Computable<String, PhantomjsClient.ResponseEntity> {
+public class PhantomjsClient implements Computable<String, String, ResponseEntity<PhantomjsResponse>> {
     private static final Logger logger = LoggerFactory.getLogger(PhantomjsClient.class);
 
     private Process process;
@@ -34,12 +38,10 @@ public class PhantomjsClient implements Computable<String, PhantomjsClient.Respo
         commands.add(builder.exec);
         commands.add(builder.script);
         commands.add("" + builder.port);
-        Stream.of(commands).forEach(System.out::println);
-
 
         ProcessBuilder pb = new ProcessBuilder(commands);
 
-        logger.debug(" ------ tmp dir folder: {} " + TempDir.getTmpDir().toFile());
+        logger.debug(" ------ start a new Phantomjs Client, using port: {} " + builder.port +  ", using tmp dir folder: {} " + TempDir.getTmpDir().toFile());
 
         pb.directory(TempDir.getOutputDir().toFile());
         process = pb.start();
@@ -92,8 +94,8 @@ public class PhantomjsClient implements Computable<String, PhantomjsClient.Respo
     }
 
 
-    public ResponseEntity compute(String params) throws SocketTimeoutException, TimeoutException {
-        ResponseEntity entity = new ResponseEntity();
+    public ResponseEntity<PhantomjsResponse> compute(String params, String urlKey) throws SocketTimeoutException, TimeoutException {
+        ResponseEntity<PhantomjsResponse> entity = new ResponseEntity<>();
         String host = "127.0.0.1";
         int port = getBindingPort();
         int connectTimeout = getConnectTimeout();
@@ -117,7 +119,7 @@ public class PhantomjsClient implements Computable<String, PhantomjsClient.Respo
             String response = IOUtils.toString(in, "utf-8");
             entity.setStatusCode(connection.getResponseCode());
             entity.setResponse(response);
-            System.out.println("Phantomjs Client serve at port{} " + getBindingPort()  + " give the response: " + connection.getResponseMessage() + ", " + connection.getResponseCode());
+            logger.info("Phantomjs Client serve at port{} " + port  + " give the response: " + connection.getResponseMessage() + ", " + connection.getResponseCode());
             in.close();
         } catch (SocketTimeoutException ste) {
             throw new SocketTimeoutException(ste.getMessage());
@@ -127,10 +129,9 @@ public class PhantomjsClient implements Computable<String, PhantomjsClient.Respo
         return entity;
     }
 
-    public static class ResponseEntity {
+    public static class ResponseEntity<T> {
         private int statusCode = -1;
         private String response;
-
 
         public ResponseEntity() {
         }
@@ -141,6 +142,11 @@ public class PhantomjsClient implements Computable<String, PhantomjsClient.Respo
         public ResponseEntity(int statusCode, String response) {
             this.statusCode = statusCode;
             this.response = response;
+        }
+
+        public T of(Class<T> clazz) {
+            assert response != null;
+            return new Gson().fromJson(response, clazz);
         }
 
         public int getStatusCode() {
@@ -157,6 +163,36 @@ public class PhantomjsClient implements Computable<String, PhantomjsClient.Respo
 
         public void setResponse(String response) {
             this.response = response;
+        }
+    }
+
+    public static class PhantomjsResponse {
+        private String url;
+        private String fileName;
+        private String msg;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
         }
     }
 
@@ -206,21 +242,6 @@ public class PhantomjsClient implements Computable<String, PhantomjsClient.Respo
             return new PhantomjsClient(this);
         }
 
-    }
-
-    public static void main(String[] args) throws TimeoutException, SocketTimeoutException {
-//        new PhantomjsClient("/usr/bin/phantomjs", "rasterize.js", "report_data_1.html", "report_data_2.pdf", "1920px");
-//        new PhantomjsClient("/usr/bin/phantomjs", "/home/fei/workspace/highcharts-export-server/tutorials/rasterize.js", "http://www.jd.com", "jd.pdf", "1920px");
-//        new PhantomjsClient("ls", "-a", "-l");
-//        new PhantomjsClient("/usr/bin/phantomjs", "/home/fei/workspace/starter/neo4j-parent/neo4j-web-starter2/src/main/resources/static/hello.js");
-        Gson gson = new Gson();
-        ConverterConfig config = new ConverterConfig("http://www.baidu.com", "baidu.pdf");
-//        ConverterConfig config = new ConverterConfig("http://www.csdn.net", "csdn.pdf");
-//        ConverterConfig config = new ConverterConfig("http://www.sdsdsdsd/asas", "nosuchdomain1.pdf");
-        String configStr = gson.toJson(config);
-        System.out.println(configStr);
-//        ResponseEntity entity = compute(configStr);
-//        System.out.println(responseCode);
     }
 
     public static class ConverterConfig {

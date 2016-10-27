@@ -1,6 +1,8 @@
 package com.derbysoft.dhp.fileserver.web;
 
 import com.derbysoft.dhp.fileserver.web.config.SpringWebConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
@@ -17,6 +19,7 @@ import javax.servlet.ServletException;
  *  good staff come here: http://www.robinhowlett.com/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/
  */
 public class FileServerInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+    private static final Logger logger = LoggerFactory.getLogger(FileServerInitializer.class);
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
@@ -27,7 +30,7 @@ public class FileServerInitializer extends AbstractAnnotationConfigDispatcherSer
 
     @Override
 	protected Class<?>[] getServletConfigClasses() {
-		System.out.println(" config the web initializer");
+        logger.info(" config the web initializer");
 		return new Class[] { SpringWebConfig.class };
 	}
 

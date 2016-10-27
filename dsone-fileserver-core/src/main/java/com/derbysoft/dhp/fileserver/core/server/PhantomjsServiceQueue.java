@@ -1,5 +1,9 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
+import com.derbysoft.dhp.fileserver.core.cache.ObjectFactory;
+import com.derbysoft.dhp.fileserver.core.cache.ServiceQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +16,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 /**
  * @author neo.fei {neocxf@gmail.com}
  */
-@Component
-public class ServiceQueue<T> implements InitializingBean, DisposableBean{
+@Component("serviceQueue")
+public class PhantomjsServiceQueue<T> implements ServiceQueue<T>, InitializingBean, DisposableBean{
+    private static final Logger logger = LoggerFactory.getLogger(PhantomjsServiceQueue.class);
+
     private static final int DEFAULT_QUEUE_SIZE = 3;
     private final BlockingQueue<T> queue ;
     private final int size;
@@ -21,15 +27,14 @@ public class ServiceQueue<T> implements InitializingBean, DisposableBean{
     @Autowired
     ObjectFactory<T> objectFactory;
 
-    public ServiceQueue() throws IOException, InterruptedException {
+    public PhantomjsServiceQueue() throws IOException, InterruptedException {
         this(DEFAULT_QUEUE_SIZE);
     }
 
-    public ServiceQueue(int size) throws IOException, InterruptedException {
+    public PhantomjsServiceQueue(int size) throws IOException, InterruptedException {
         this.queue = new LinkedBlockingDeque<T>(size);
         this.size = size;
     }
-
 
     /**
      *  blocking to borrow the service
@@ -44,9 +49,8 @@ public class ServiceQueue<T> implements InitializingBean, DisposableBean{
     /**
      *  added the service
      * @param t client
-     * @throws InterruptedException
      */
-    public void offerService(T t) throws InterruptedException {
+    public void offerService(T t) {
         queue.offer(t);
     }
 
@@ -58,12 +62,14 @@ public class ServiceQueue<T> implements InitializingBean, DisposableBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        logger.debug(" ServiceQueue initializing the instance queue ... ");
         initialize();
     }
 
 
     @Override
     public void destroy() throws Exception {
+        logger.debug(" ServiceQueue destroying the instance queue ... ");
 
         for (T elem : queue) {
             objectFactory.destroy(elem);

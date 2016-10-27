@@ -1,4 +1,4 @@
-package com.derbysoft.dhp.fileserver.core.server;
+package com.derbysoft.dhp.fileserver.core.cache;
 
 import java.util.Collections;
 import java.util.Map;
@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author neo.fei {neocxf@gmail.com}
  */
+@Deprecated
 public class PhantomjsClientCache {
     private static final Map<String, TwoTuple<String, Integer>> resourceCache = new ConcurrentHashMap<>();
     public static final String DEFAULT_FILENAME = "_default_phantomjs_cache_file";

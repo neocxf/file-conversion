@@ -14,6 +14,11 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig {
 
+    /**
+     *  executor pool config for async execution or other thread-related config
+     *
+     * @return the executor
+     */
     @Bean(name = "executorPool")
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();

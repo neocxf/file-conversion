@@ -1,14 +1,15 @@
 package com.derbysoft.dhp.fileserver.web.controller;
 
-import com.derbysoft.dhp.fileserver.core.server.ObjectFactory;
+import com.derbysoft.dhp.fileserver.core.cache.ObjectFactory;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
-import com.derbysoft.dhp.fileserver.core.server.PhantomjsClientCache;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsServiceExecutor;
 import com.derbysoft.dhp.fileserver.core.util.FileUtilsWrapper;
 import com.derbysoft.dhp.fileserver.core.util.MimeType;
 import com.derbysoft.dhp.fileserver.core.util.RegexUtils;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
-import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -42,7 +43,7 @@ public class FileConverterController {
     ObjectFactory<PhantomjsClient> objectFactory;
 
     @Autowired
-    PhantomjsServiceExecutor phantomjsServiceExecutor;
+    PhantomjsServiceExecutor serviceExecutor;
 
     @RequestMapping(value = "/html/{fileType}", method = RequestMethod.GET)
     public void convertUrlToHtml(HttpServletRequest request, HttpServletResponse response,
@@ -60,34 +61,25 @@ public class FileConverterController {
             throw new IllegalArgumentException("illegal url: {} " + url);
         }
 
-        String cacheFileName = PhantomjsClientCache.get(url);
-        if (cacheFileName.equals(PhantomjsClientCache.DEFAULT_FILENAME)) { // without the cache
+        if (fileName.equals("_default")) {
+            targetFileName = FileUtilsWrapper.createRandomFileNameWithExtension(fileExtension);
+        } else
+            targetFileName = fileName + "." + fileExtension;
 
-            if (fileName.equals("_default")) {
-                targetFileName = FileUtilsWrapper.createRandomFileNameWithExtension(fileExtension);
-            } else
-                targetFileName = fileName + "." + fileExtension;
+        ConverterConfig config = new ConverterConfig(url, targetFileName);
 
-            PhantomjsClient.ConverterConfig config = new PhantomjsClient.ConverterConfig(url, targetFileName);
+        ResponseEntity<PhantomjsResponse>  entity = serviceExecutor.execute(config, url);
 
-            Gson gson = new Gson();
+        int responseCode = entity.getStatusCode();
 
-            String jsonStr = gson.toJson(config);
-
-            System.out.println(jsonStr);
-
-            Future<PhantomjsClient.ResponseEntity> future = phantomjsServiceExecutor.submit(jsonStr);
-
-            int responseCode = future.get().getStatusCode();
-
-            if (responseCode != 200) {
-                logger.error("EXIT-STATUS - "); // error handling
-            } else {
-                PhantomjsClientCache.store(url, targetFileName);
-            }
-        } else {
-            targetFileName = cacheFileName;
+        if (responseCode != 200) {
+            logger.error("EXIT-STATUS - "); // error handling, should throw un-checked exception
         }
+
+        PhantomjsResponse phantomjsResponse = entity.of(PhantomjsResponse.class);
+
+        targetFileName = phantomjsResponse.getFileName(); // get the cached file name
+
 
         String longFileName = TempDir.getDownloadLink(targetFileName);
 

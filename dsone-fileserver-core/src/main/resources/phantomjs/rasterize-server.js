@@ -68,10 +68,17 @@ if (system.args.length !== 2) {
         page.open(address, function (status) {
             console.log('Phantomjs server return status: {} ' + status);
 
+            // response.headers = {
+            //     'Cache': 'no-cache',
+            //     'Content-Type': 'text/html'
+            // };
+
             response.headers = {
                 'Cache': 'no-cache',
-                'Content-Type': 'text/html'
+                'Content-Type': 'application/json'
             };
+
+            var entity = {};
 
             if (status !== 'success') {
                 console.log('Unable to load the address!');
@@ -83,16 +90,24 @@ if (system.args.length !== 2) {
 
                 response.statusCode = 404;
 
-                response.write('<html>');
-                response.write('<head>');
-                response.write('<title>Error Page</title>');
-                response.write('</head>');
-                response.write('<body>');
-                response.write('<p>The page you are looking does not exist.</p>');
-                response.write('</body>');
-                response.write('</html>');
+                entity.statusCode = 404;
+                entity.msg = "The page you are looking does not exist.";
+
+                response.write(JSON.stringify(entity, null, 4));
 
                 response.close();
+
+
+                // response.write('<html>');
+                // response.write('<head>');
+                // response.write('<title>Error Page</title>');
+                // response.write('</head>');
+                // response.write('<body>');
+                // response.write('<p>The page you are looking does not exist.</p>');
+                // response.write('</body>');
+                // response.write('</html>');
+                //
+                // response.close();
             }
             else {
 
@@ -102,22 +117,35 @@ if (system.args.length !== 2) {
                     page.render(output);
                     // phantom.exit();
 
-                    response.statusCode = 200;
+                    entity.statusCode = 200;
+                    entity.msg = " the page with url: " + params.url + " has been successfully rendered";
+                    entity.url = params.url;
+                    entity.fileName = params.fileName;
 
-                    response.write('<html>');
-                    response.write('<head>');
-                    response.write('<title>Hello, world!</title>');
-                    response.write('</head>');
-                    response.write('<body>');
-                    response.write('<p>This is from PhantomJS web server.</p>');
-                    response.write('<p>Request data:</p>');
-                    response.write('<pre>');
-                    response.write(JSON.stringify(request, null, 4));
-                    response.write('</pre>');
-                    response.write('</body>');
-                    response.write('</html>');
+                    // normal way of writing json to the end peer
+                    response.statusCode = 200;
+                    response.write(JSON.stringify(entity, null, 4));
                     response.close();
 
+                    // Node.js way of writing to the end peer, not working
+                    // response.writeHead(200, {"Content-Type": "application/json"});
+                    // response.end(entity);
+
+                    // 3rd approach: return the text/html page
+                    // response.statusCode = 200;
+                    // response.write('<html>');
+                    // response.write('<head>');
+                    // response.write('<title>Hello, world!</title>');
+                    // response.write('</head>');
+                    // response.write('<body>');
+                    // response.write('<p>This is from PhantomJS web server.</p>');
+                    // response.write('<p>Request data:</p>');
+                    // response.write('<pre>');
+                    // response.write(JSON.stringify(request, null, 4));
+                    // response.write('</pre>');
+                    // response.write('</body>');
+                    // response.write('</html>');
+                    // response.close();
 
                 }, 200);
             }
