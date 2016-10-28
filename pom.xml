@@ -6,7 +6,7 @@
 
     <groupId>com.derbysoft.dhp</groupId>
     <artifactId>dsone-fileserver-parent</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <modules>
         <module>dsone-fileserver-core</module>
         <module>dsone-fileserver-web</module>
@@ -214,8 +214,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
 

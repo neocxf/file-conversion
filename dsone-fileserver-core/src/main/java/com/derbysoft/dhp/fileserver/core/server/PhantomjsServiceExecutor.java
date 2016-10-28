@@ -25,13 +25,12 @@ import java.util.concurrent.Future;
 public class PhantomjsServiceExecutor implements InitializingBean {
    private static final Logger logger = LoggerFactory.getLogger(PhantomjsServiceExecutor.class);
 
-    private CacheFutureMemorizer<String, String, ResponseEntity<PhantomjsResponse>> memorizer;
+    private final CacheFutureMemorizer<String, String, ResponseEntity<PhantomjsResponse>> memorizer;
 
     @Autowired
     public PhantomjsServiceExecutor(Executor executorPool, ServiceQueue<Computable<String, String, ResponseEntity<PhantomjsResponse>>> serviceQueue) {
         this.memorizer = new CacheFutureMemorizer<>(executorPool, serviceQueue);
     }
-
 
     public ResponseEntity<PhantomjsResponse> execute(ConverterConfig configVo, final String url) throws InterruptedException {
 
