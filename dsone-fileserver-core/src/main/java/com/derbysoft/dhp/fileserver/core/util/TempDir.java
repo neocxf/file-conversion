@@ -4,6 +4,7 @@
  */
 package com.derbysoft.dhp.fileserver.core.util;
 
+import com.derbysoft.dhp.fileserver.api.util.FileUtils2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -15,12 +16,13 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.*;
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 /**
  * temporary directory configuration for the whole project
@@ -70,25 +72,49 @@ public class TempDir {
      *
      * @throws IOException
      */
-//    @PostConstruct
-//    private void copyResources() throws IOException  {
-//        logger.debug("------------------------- copying phantomjs related file to TEMP subfolder --------------------------");
-//
-//        // using getResource() may cause the WebApplicationClassLoader not finding the resource.
-//        // Idealy, the following two ways should both work fine. But at Tomcat 7, the following will not work.
-////        String url = Thread.currentThread().getContextClassLoader().getResource("rasterize.js").getFile();
-////        File file = new File(url);
-////        FileUtils.copyFileToDirectory(file, getPhantomJsDir().toFile() );
-//
-//
-//        // it seems that at web environment, when we want to load the file inside the jar, we could only use getResourceAsStream method
-//        // otherwise, error occurs.
+    @PostConstruct
+    private void copyResources() throws IOException, URISyntaxException {
+        logger.debug("------------------------- copying phantomjs related file to TEMP subfolder --------------------------");
+
+        // using getResource() may cause the WebApplicationClassLoader not finding the resource.
+        // Idealy, the following two ways should both work fine. But at Tomcat 7, the following will not work.
+//        String url = Thread.currentThread().getContextClassLoader().getResource("rasterize.js").getFile();
+//        File file = new File(url);
+//        FileUtils.copyFileToDirectory(file, getPhantomJsDir().toFile() );
+
+
+        // it seems that at web environment, when we want to load the file inside the jar, we could only use getResourceAsStream method
+        // otherwise, error occurs.
 //        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("phantomjs/rasterize.js");
 //        FileUtils.copyInputStreamToFile(is, new File(getLongScriptName("phantomjs/rasterize.js")) );
-//    }
 
-    @PostConstruct
-    private void copyResources() {
+        // JAVA8 consumer way
+        URL url = Thread.currentThread().getContextClassLoader().getResource("phantomjs/rasterize.js");
+
+        assert url != null;
+
+        logger.debug(" @PostConstruct method in TempDir called to copy all valid js file to tmp dir ...");
+
+        FileUtils2.processResource(url.toURI(), path -> Files.list(path.getParent())
+                .filter(p -> p.toString().endsWith(".js"))
+                .forEach(p -> {
+                    try {
+                        logger.debug("Copying " + p.getFileName() + " to " + TempDir.getPhantomJsDir());
+                        Path jsPath = Paths.get(TempDir.getPhantomJsDir().toString(),  p.getFileName().toString());
+                        Files.copy(p, jsPath, StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException ioex) {
+                        logger.error("Error while setting up phantomjs environment: " + ioex.getMessage());
+                        ioex.printStackTrace();
+                    }
+                }));
+
+    }
+
+    /**
+     *  spring way of handling the copying of jar file to the dest dir.
+     */
+//    @PostConstruct
+    private void copyResources2() {
         logger.debug(" @PostConstruct method in TempDir called to copy all valid js file to tmp dir ...");
         URL u = getClass().getProtectionDomain().getCodeSource().getLocation();
         URLClassLoader jarLoader = new URLClassLoader(new URL[]{u}, Thread.currentThread().getContextClassLoader());

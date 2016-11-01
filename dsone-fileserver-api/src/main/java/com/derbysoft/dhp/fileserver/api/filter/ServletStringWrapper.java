@@ -1,4 +1,4 @@
-package com.derbysoft.dhp.fileserver.web.filter;
+package com.derbysoft.dhp.fileserver.api.filter;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;

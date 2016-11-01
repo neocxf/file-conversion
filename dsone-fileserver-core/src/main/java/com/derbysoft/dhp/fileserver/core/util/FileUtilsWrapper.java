@@ -1,16 +1,14 @@
 package com.derbysoft.dhp.fileserver.core.util;
 
+import com.derbysoft.dhp.fileserver.api.util.DateUtils;
 import com.derbysoft.dhp.fileserver.core.exception.FileIOException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystems;
-import java.time.LocalDate;
 
 /**
  *  wrapper for the commons.io utilities, and jdk utils
@@ -18,6 +16,7 @@ import java.time.LocalDate;
  * @author neo.fei {neocxf@gmail.com}
  */
 public class FileUtilsWrapper {
+
     /**
      *  store the file, and return the file name for latter phantomjs usage
      *  TODO: may be refined for the latter use

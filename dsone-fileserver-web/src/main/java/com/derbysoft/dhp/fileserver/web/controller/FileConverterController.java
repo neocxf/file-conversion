@@ -1,6 +1,8 @@
 package com.derbysoft.dhp.fileserver.web.controller;
 
-import com.derbysoft.dhp.fileserver.core.cache.ObjectFactory;
+import com.derbysoft.dhp.fileserver.api.FileServerGatewayConstants;
+import com.derbysoft.dhp.fileserver.api.cache.ObjectFactory;
+import com.derbysoft.dhp.fileserver.api.util.RegexUtils;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
@@ -8,7 +10,6 @@ import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsServiceExecutor;
 import com.derbysoft.dhp.fileserver.core.util.FileUtilsWrapper;
 import com.derbysoft.dhp.fileserver.core.util.MimeType;
-import com.derbysoft.dhp.fileserver.core.util.RegexUtils;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeoutException;
  * @author neo.fei {neocxf@gmail.com}
  */
 @Controller
-@RequestMapping("/converter")
 public class FileConverterController {
     private static final Logger logger = LoggerFactory.getLogger(FileConverterController.class);
 
@@ -45,12 +45,11 @@ public class FileConverterController {
     @Autowired
     PhantomjsServiceExecutor serviceExecutor;
 
-    @RequestMapping(value = "/html/{fileType}", method = RequestMethod.GET)
+    @RequestMapping(value = FileServerGatewayConstants.CONVERTER_ENTRANCE + "{fileType}", method = {RequestMethod.GET, RequestMethod.POST})
     public void convertUrlToHtml(HttpServletRequest request, HttpServletResponse response,
                                  @PathVariable("fileType") String fileType,
                                  @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
                                  @RequestParam("url") String url) throws IOException, InterruptedException, TimeoutException, ExecutionException {
-
         String targetFileName = "";
 
         MimeType mimeType = MimeType.get(fileType); // return the MimeType enum object. if the filetype is unknown, return the PNG

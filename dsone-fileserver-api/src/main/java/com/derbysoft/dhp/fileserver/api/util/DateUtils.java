@@ -1,4 +1,4 @@
-package com.derbysoft.dhp.fileserver.core.util;
+package com.derbysoft.dhp.fileserver.api.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

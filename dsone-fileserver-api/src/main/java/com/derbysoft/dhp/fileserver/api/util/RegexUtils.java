@@ -1,4 +1,4 @@
-package com.derbysoft.dhp.fileserver.core.util;
+package com.derbysoft.dhp.fileserver.api.util;
 
 /**
  *
@@ -12,6 +12,12 @@ public class RegexUtils {
         throw new AssertionError("should not initialize this class");
     }
 
+    /**
+     *  check to see that if the given string is a valid url (could be a valid file url, ftp url or http url)
+     * @param url the checking string
+     * @return true if the string is a valid url; false if not
+     *
+     */
     public static boolean isValidUrl(String url) {
         return url.matches(url);
     }

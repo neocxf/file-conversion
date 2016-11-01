@@ -1,6 +1,6 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
-import com.derbysoft.dhp.fileserver.core.cache.ObjectFactory;
+import com.derbysoft.dhp.fileserver.api.cache.ObjectFactory;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +44,8 @@ public class PhantomjsObjectFactory implements ObjectFactory<PhantomjsClient> {
     public PhantomjsClient create() throws IOException {
         String longScript = tempDir.getLongScriptName(script);
 
-//        logger.debug("in makeObject, exec: " + exec + ", script: " +  script + ", url: " +  url + ", destFile: " + destFile + ", outputsize: " + size);
         int generatedPort = SocketUtils.findAvailableTcpPort(port);;
+        logger.debug("in makeObject, exec: " + exec + ", script: " +  longScript + ", host: " +  host + ", port: " + generatedPort + ", outputsize: " + size);
         PhantomjsClient client = new PhantomjsClient.PhantomjsClientBuilder(exec, longScript, host, generatedPort).create();
         return client;
     }

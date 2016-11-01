@@ -7,7 +7,7 @@
 logs/
 target/
 .idea/
-
+dsone-fileserver-client/
 # Package Files #
 *.jar
 *.war

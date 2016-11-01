@@ -1,4 +1,4 @@
-package com.derbysoft.dhp.fileserver.core.cache;
+package com.derbysoft.dhp.fileserver.api.cache;
 
 import java.io.IOException;
 

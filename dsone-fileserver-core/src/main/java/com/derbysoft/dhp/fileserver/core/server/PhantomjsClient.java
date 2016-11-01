@@ -1,6 +1,6 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
-import com.derbysoft.dhp.fileserver.core.cache.Computable;
+import com.derbysoft.dhp.fileserver.api.cache.Computable;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
@@ -104,7 +104,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         try {
             URL url = new URL("http://" + host + ":"
                     + port + "/");
-
+            logger.debug("params: " + params + ", urlKey: " + urlKey);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setConnectTimeout(connectTimeout);

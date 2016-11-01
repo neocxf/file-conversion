@@ -1,4 +1,4 @@
-package com.derbysoft.dhp.fileserver.core.cache;
+package com.derbysoft.dhp.fileserver.api.cache;
 
 /**
  * @author neo.fei {neocxf@gmail.com}

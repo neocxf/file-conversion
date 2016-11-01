@@ -1,8 +1,8 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
-import com.derbysoft.dhp.fileserver.core.cache.CacheFutureMemorizer;
-import com.derbysoft.dhp.fileserver.core.cache.Computable;
-import com.derbysoft.dhp.fileserver.core.cache.ServiceQueue;
+import com.derbysoft.dhp.fileserver.api.cache.CacheFutureMemorizer;
+import com.derbysoft.dhp.fileserver.api.cache.Computable;
+import com.derbysoft.dhp.fileserver.api.cache.ServiceQueue;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
@@ -38,8 +38,8 @@ public class PhantomjsServiceExecutor implements InitializingBean {
 
         String jsonStr = gson.toJson(configVo);
 
-        logger.trace(" params: {} " + jsonStr);
-        logger.trace(" url: {} " + url);
+        logger.debug(" params: {} " + jsonStr);
+        logger.debug(" url: {} " + url);
 
         logger.debug(" inspect the cache pool for Phantomjs converter ...");
         Map<String, Future<ResponseEntity<PhantomjsResponse>>> cache = memorizer.getResourceCache();

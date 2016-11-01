@@ -10,6 +10,7 @@
     <modules>
         <module>dsone-fileserver-core</module>
         <module>dsone-fileserver-web</module>
+        <module>dsone-fileserver-api</module>
     </modules>
 
     <packaging>pom</packaging>
