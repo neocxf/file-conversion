@@ -104,7 +104,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         try {
             URL url = new URL("http://" + host + ":"
                     + port + "/");
-            logger.debug("params: " + params + ", urlKey: " + urlKey);
+            logger.trace("params: " + params + ", urlKey: " + urlKey);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setConnectTimeout(connectTimeout);

@@ -38,8 +38,8 @@ public class PhantomjsServiceExecutor implements InitializingBean {
 
         String jsonStr = gson.toJson(configVo);
 
-        logger.debug(" params: {} " + jsonStr);
-        logger.debug(" url: {} " + url);
+        logger.trace(" params: {} " + jsonStr);
+        logger.trace(" url: {} " + url);
 
         logger.debug(" inspect the cache pool for Phantomjs converter ...");
         Map<String, Future<ResponseEntity<PhantomjsResponse>>> cache = memorizer.getResourceCache();
