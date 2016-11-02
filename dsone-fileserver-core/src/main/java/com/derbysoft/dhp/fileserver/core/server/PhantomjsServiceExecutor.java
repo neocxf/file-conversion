@@ -1,8 +1,8 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
-import com.derbysoft.dhp.fileserver.api.cache.CacheFutureMemorizer;
-import com.derbysoft.dhp.fileserver.api.cache.Computable;
-import com.derbysoft.dhp.fileserver.api.cache.ServiceQueue;
+import com.derbysoft.dhp.fileserver.api.support.CacheFutureMemorizer;
+import com.derbysoft.dhp.fileserver.api.support.Computable;
+import com.derbysoft.dhp.fileserver.api.support.ServiceQueue;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;

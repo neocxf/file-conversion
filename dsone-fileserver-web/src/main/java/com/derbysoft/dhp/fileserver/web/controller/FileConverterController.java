@@ -1,8 +1,7 @@
 package com.derbysoft.dhp.fileserver.web.controller;
 
 import com.derbysoft.dhp.fileserver.api.FileServerGatewayConstants;
-import com.derbysoft.dhp.fileserver.api.cache.ObjectFactory;
-import com.derbysoft.dhp.fileserver.api.util.RegexUtils;
+import com.derbysoft.dhp.fileserver.api.support.ObjectFactory;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
@@ -11,6 +10,8 @@ import com.derbysoft.dhp.fileserver.core.server.PhantomjsServiceExecutor;
 import com.derbysoft.dhp.fileserver.core.util.FileUtilsWrapper;
 import com.derbysoft.dhp.fileserver.core.util.MimeType;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,20 +46,24 @@ public class FileConverterController {
     @Autowired
     PhantomjsServiceExecutor serviceExecutor;
 
+    @ApiOperation(value = " transform the given url page into a given format file ",
+            notes = "  <ul> <li> the caller must provide their valid url (html url) and post as <strong>url</strong> field </li> " +
+                    "  <li> the operation will be synchronized, the result may be cached, so the caller should provide the <strong>fileName</strong> field if they want the different output, otherwise, the result will be all the same based on the cache impl </li></ul>",
+            response = Void.class)
     @RequestMapping(value = FileServerGatewayConstants.CONVERTER_ENTRANCE + "{fileType}", method = {RequestMethod.GET, RequestMethod.POST})
     public void convertUrlToHtml(HttpServletRequest request, HttpServletResponse response,
-                                 @PathVariable("fileType") String fileType,
-                                 @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
-                                 @RequestParam("url") String url) throws IOException, InterruptedException, TimeoutException, ExecutionException {
+                                 @ApiParam(value = "the type of generated file that you need, default is pdf", allowableValues = "pdf, png, jpeg")  @PathVariable("fileType") String fileType,
+                                 @ApiParam(value = "the filename of the generated file, default is '_default'")  @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
+                                 @ApiParam(value = "the valid http url address", required = true) @RequestParam("url") String url) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String targetFileName = "";
 
         MimeType mimeType = MimeType.get(fileType); // return the MimeType enum object. if the filetype is unknown, return the PNG
 
         String fileExtension = mimeType.getExtension();
 
-        if (! RegexUtils.isValidUrl(url)) {
-            throw new IllegalArgumentException("illegal url: {} " + url);
-        }
+//        if (! RegexUtils.isValidUrl(url)) {
+//            throw new IllegalArgumentException("illegal url: {} " + url);
+//        }
 
         if (fileName.equals("_default")) {
             targetFileName = FileUtilsWrapper.createRandomFileNameWithExtension(fileExtension);

@@ -1,6 +1,6 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
-import com.derbysoft.dhp.fileserver.api.cache.Computable;
+import com.derbysoft.dhp.fileserver.api.support.Computable;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
@@ -196,6 +196,10 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         }
     }
 
+    public static PhantomjsClientBuilder custom() {
+        return new PhantomjsClientBuilder();
+    }
+
     public static class PhantomjsClientBuilder {
         private String exec;
         private String script;
@@ -204,26 +208,30 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         private int connectTimeout;
         private int readTimeout;
 
+        protected PhantomjsClientBuilder() {
+
+        }
+
         /**
          *  build the PhantomjsClient
          * @param exec Phantomjs execution context
          * @param script the js file
          */
-        public PhantomjsClientBuilder(String exec, String script) {
+        protected PhantomjsClientBuilder(String exec, String script) {
             this.exec = exec;
             this.script = script;
             this.host = "127.0.0.1";
             this.port = SocketUtils.findAvailableTcpPort();
         }
 
-        public PhantomjsClientBuilder(String exec, String script, String host, int port) {
+        protected PhantomjsClientBuilder(String exec, String script, String host, int port) {
             this.exec = exec;
             this.script = script;
             this.host = host;
             this.port = port;
         }
 
-        public PhantomjsClientBuilder withHost(String host) {
+        protected PhantomjsClientBuilder withHost(String host) {
             this.host = host;
             return this;
         }

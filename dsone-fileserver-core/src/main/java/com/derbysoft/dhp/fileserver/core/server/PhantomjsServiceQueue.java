@@ -1,7 +1,7 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
-import com.derbysoft.dhp.fileserver.api.cache.ObjectFactory;
-import com.derbysoft.dhp.fileserver.api.cache.ServiceQueue;
+import com.derbysoft.dhp.fileserver.api.support.ObjectFactory;
+import com.derbysoft.dhp.fileserver.api.support.ServiceQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;

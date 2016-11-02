@@ -5,9 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 
 /**
  *  entry point of annotation-based servlet 3.0 container.
@@ -49,4 +47,18 @@ public class FileServerInitializer extends AbstractAnnotationConfigDispatcherSer
         return new Filter[] {};
     }
 
+    @Override
+    protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+        super.customizeRegistration(registration);
+        registration.setMultipartConfig(new MultipartConfigElement(LOCATION, MAX_FILE_SIZE, MAX_REQUEST_SIZE, FILE_SIZE_THRESHOLD));
+    }
+
+
+    private static final String LOCATION = "/tmp/"; // Temporary location where files will be stored
+
+    private static final long MAX_FILE_SIZE = 5242880; // 5MB : Max file size.
+    // Beyond that size spring will throw exception.
+    private static final long MAX_REQUEST_SIZE = 20971520; // 20MB : Total request size containing Multi part.
+
+    private static final int FILE_SIZE_THRESHOLD = 0; // Size threshold after which files will be written to disk
 }

@@ -9,6 +9,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  *  wrapper for the commons.io utilities, and jdk utils
@@ -29,6 +31,20 @@ public class FileUtilsWrapper {
         File tempFile = createTempFile(content, fileName);
         return tempFile.getPath();
     }
+
+    /**
+     *  store the given byte[] to file
+     * @param content
+     * @param fileName
+     * @return
+     * @throws IOException
+     */
+    public static String storeFile(byte[] content, String fileName) throws IOException {
+        String longFileName = TempDir.getDownloadLink(fileName);
+        Files.write(Paths.get(longFileName), content);
+        return longFileName;
+    }
+
 
     /**
      *  store the file, and return the file name for latter phantomjs usage

@@ -19,6 +19,6 @@ public class RegexUtils {
      *
      */
     public static boolean isValidUrl(String url) {
-        return url.matches(url);
+        return url.matches(URL_PATTERN);
     }
 }
