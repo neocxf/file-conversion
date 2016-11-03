@@ -1,9 +1,6 @@
 package com.derbysoft.dhp.fileserver.web.config;
 
-import com.derbysoft.dhp.fileserver.api.exception.EntityExistsException;
-import com.derbysoft.dhp.fileserver.api.exception.EntityNotFoundException;
-import com.derbysoft.dhp.fileserver.api.exception.ErrorDetail;
-import com.derbysoft.dhp.fileserver.api.exception.ValidationError;
+import com.derbysoft.dhp.fileserver.api.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +99,19 @@ class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
         ErrorDetail errorDetail = new ErrorDetail();
         // Populate errorDetail instance
         errorDetail.setTimestamp(new Date().getTime());
-        errorDetail.setTitle("参数输入非法");
+        errorDetail.setTitle("Illegal argument founded");
+        errorDetail.setDetail(ex.getMessage());
+        errorDetail.setDeveloperMessage(ex.getClass().getName());
+
+        return new ResponseEntity<Object>(errorDetail, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ComputeFailedException.class)
+    public ResponseEntity<?> IllegalArgumentExceptionHandler(ComputeFailedException ex) {
+        ErrorDetail errorDetail = new ErrorDetail();
+        // Populate errorDetail instance
+        errorDetail.setTimestamp(new Date().getTime());
+        errorDetail.setTitle("Compute failed for some reason, maybe try agin later ...");
         errorDetail.setDetail(ex.getMessage());
         errorDetail.setDeveloperMessage(ex.getClass().getName());
 

@@ -13,7 +13,7 @@ public interface Computable<A, K, V> {
     /**
      *  execute the long-time consuming job synchronously. and, return the value
      *
-     *  specially, the impl of this interface {@link CacheFutureMemorizer} are mean to serve as an cache with {@link java.util.concurrent.Future} to
+     *  specially, the impl of this interface are mean to serve as an cache with {@link java.util.concurrent.Future} to
      *  avoid the repeatedly processing of long-time consuming job.
      *
      * @param arg the argument that the Computable take

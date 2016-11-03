@@ -9,11 +9,14 @@ import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
@@ -22,15 +25,12 @@ import java.util.concurrent.Future;
  * @author neo.fei {neocxf@gmail.com}
  */
 @Component("serviceExecutor")
-public class PhantomjsServiceExecutor implements InitializingBean {
+public class PhantomjsServiceExecutor implements InitializingBean, ApplicationContextAware {
    private static final Logger logger = LoggerFactory.getLogger(PhantomjsServiceExecutor.class);
 
-    private final CacheFutureMemorizer<String, String, ResponseEntity<PhantomjsResponse>> memorizer;
+    private ApplicationContext applicationContext;
 
-    @Autowired
-    public PhantomjsServiceExecutor(Executor executorPool, ServiceQueue<Computable<String, String, ResponseEntity<PhantomjsResponse>>> serviceQueue) {
-        this.memorizer = new CacheFutureMemorizer<>(executorPool, serviceQueue);
-    }
+    private CacheFutureMemorizer<String, String, ResponseEntity<PhantomjsResponse>> memorizer;
 
     public ResponseEntity<PhantomjsResponse> execute(ConverterConfig configVo, final String url) throws InterruptedException {
 
@@ -55,8 +55,20 @@ public class PhantomjsServiceExecutor implements InitializingBean {
 
     }
 
+
+    @SuppressWarnings("all")
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.debug(" PhantomjsServiceExecutor initialized ...");
+
+        Executor executorPool = applicationContext.getBean("executorPool", Executor.class);
+        ServiceQueue<Computable<String, String, ResponseEntity<PhantomjsResponse>>> serviceQueue = applicationContext.getBean("serviceQueue", ServiceQueue.class);
+        ConcurrentMap<String, Future<ResponseEntity<PhantomjsResponse>>> phantomjsClientCacheMap = applicationContext.getBean("phantomjsClientCacheMap", ConcurrentMap.class);
+        this.memorizer = new CacheFutureMemorizer<>(phantomjsClientCacheMap, executorPool, serviceQueue);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

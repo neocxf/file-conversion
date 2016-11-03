@@ -44,7 +44,7 @@ public class RemoteOpenController {
         String fileName = (rawFileName.equals("_default") ? createPrefixDailyName("_report") : rawFileName) + ".html";
         String htmlUrl = FileUtilsWrapper.storeFile(content, fileName);
         String requestUrl = FileServerGatewayConstants.CONVERTER_ENTRANCE + extension + "?url=" + htmlUrl;
-        logger.debug(" going to forward the request to " + requestUrl);
+        logger.trace(" going to forward the request to " + requestUrl);
         req.getRequestDispatcher(requestUrl).forward(req, resp);
     }
 
@@ -59,7 +59,7 @@ public class RemoteOpenController {
         String fileName = (rawFileName.equals("_default") ? createPrefixDailyName("_report") : rawFileName) + ".html";
         String htmlUrl = FileUtilsWrapper.storeFile(file.getBytes(), fileName);
         String requestUrl = FileServerGatewayConstants.CONVERTER_ENTRANCE + extension + "?url=" + htmlUrl;
-        logger.debug(" going to forward the request to " + requestUrl);
+        logger.trace(" going to forward the request to " + requestUrl);
         req.getRequestDispatcher(requestUrl).forward(req, resp);
     }
 

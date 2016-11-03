@@ -1,5 +1,7 @@
 package com.derbysoft.dhp.fileserver.api.support;
 
+import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -10,7 +12,7 @@ import java.util.concurrent.*;
  */
 public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
 
-    private final ConcurrentHashMap<K, Future<V>> cache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<K, Future<V>> cache;
 
     private final Executor executor;
 
@@ -18,9 +20,14 @@ public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
 
     private ServiceQueue<Computable<A, K, V>> serviceQueue;
 
-    public CacheFutureMemorizer(Executor executor, ServiceQueue<Computable<A, K, V>> serviceQueue) {
+    public CacheFutureMemorizer(ConcurrentMap<K, Future<V>> cache, Executor executor, ServiceQueue<Computable<A, K, V>> serviceQueue) {
+        this.cache = cache;
         this.executor = executor;
         this.serviceQueue = serviceQueue;
+    }
+
+    public CacheFutureMemorizer(Executor executor, ServiceQueue<Computable<A, K, V>> serviceQueue) {
+        this(new ConcurrentHashMap<K, Future<V>>(), executor, serviceQueue);
     }
 
     @Override
@@ -68,7 +75,10 @@ public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
                     cache.remove(arg, f);
                 }
                 catch  (ExecutionException e) {
+                    f.cancel(true);
+                    cache.remove(arg, f);
                     e.printStackTrace();
+                    throw new ComputeFailedException(e.getMessage());
                 }
             }
 
