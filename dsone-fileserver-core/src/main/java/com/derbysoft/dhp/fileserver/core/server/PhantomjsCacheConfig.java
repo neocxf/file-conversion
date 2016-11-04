@@ -39,7 +39,7 @@ public class PhantomjsCacheConfig {
     @Bean(name = "phantomjsClientCacheMap")
     public ConcurrentMap<String, Future<ResponseEntity<PhantomjsResponse>>> concurrentMap() {
         cache =  CacheBuilder.newBuilder()
-                .expireAfterWrite(1, TimeUnit.HOURS)
+                .expireAfterAccess(1, TimeUnit.HOURS)
                 .removalListener((RemovalListener<String, Future<ResponseEntity<PhantomjsResponse>>>) notification -> {
                     Future<ResponseEntity<PhantomjsResponse>> future = notification.getValue();
                     assert future != null;
