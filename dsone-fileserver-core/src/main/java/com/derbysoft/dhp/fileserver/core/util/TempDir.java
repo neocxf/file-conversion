@@ -72,7 +72,7 @@ public class TempDir {
      *
      * @throws IOException
      */
-    @PostConstruct
+//    @PostConstruct
     private void copyResources() throws IOException, URISyntaxException {
         logger.debug("------------------------- copying phantomjs related file to TEMP subfolder --------------------------");
 
@@ -113,7 +113,7 @@ public class TempDir {
     /**
      *  spring way of handling the copying of jar file to the dest dir.
      */
-//    @PostConstruct
+    @PostConstruct
     private void copyResources2() {
         logger.debug(" @PostConstruct method in TempDir called to copy all valid js file to tmp dir ...");
         URL u = getClass().getProtectionDomain().getCodeSource().getLocation();

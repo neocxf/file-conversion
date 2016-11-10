@@ -3,6 +3,5 @@ logging:
   level:
     com.derbysoft.dhp.fileserver: debug
 server:
-  context-path: /fileserver
   port: 8081
   display-name: fileserver

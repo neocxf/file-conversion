@@ -77,7 +77,7 @@ public class FileConverterController {
         int responseCode = entity.getStatusCode();
 
         if (responseCode != 200) {
-            logger.error("EXIT-STATUS - "); // error handling, should throw un-checked exception
+            logger.error("PhantomjsClient call failed, with the EXIT-STATUS - " + responseCode); // error handling, should throw un-checked exception
         }
 
         PhantomjsResponse phantomjsResponse = entity.of(PhantomjsResponse.class);

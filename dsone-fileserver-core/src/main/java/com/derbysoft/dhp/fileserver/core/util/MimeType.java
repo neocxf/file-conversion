@@ -1,12 +1,3 @@
-/**
- * @license Highcharts JS v2.3.3 (2012-11-02)
- *
- * (c) 2012-2014
- *
- * Author: Gert Vaartjes
- *
- * License: www.highcharts.com/license
- */
 package com.derbysoft.dhp.fileserver.core.util;
 
 import java.util.EnumSet;

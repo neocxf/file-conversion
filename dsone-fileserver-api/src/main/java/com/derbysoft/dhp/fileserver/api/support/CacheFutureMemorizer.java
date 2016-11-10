@@ -2,6 +2,7 @@ package com.derbysoft.dhp.fileserver.api.support;
 
 import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -40,7 +41,7 @@ public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
 
                 Callable<V> eval = new Callable<V>() {
                     @Override
-                    public V call() throws Exception {
+                    public V call() throws InterruptedException, IOException, TimeoutException {
                         return c1.compute(arg, key);
                     }
                 };
@@ -58,11 +59,15 @@ public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
                     return f.get();
                 }
                 catch  (CancellationException e) {
-                    cache.remove(arg, f);
+                    cache.remove(key);
                 }
                 catch  (ExecutionException e) {
-                    e.printStackTrace();
-                } finally {
+                    f.cancel(true);
+                    cache.remove(key);
+
+                    throw new ComputeFailedException(e.getMessage());
+                }
+                finally {
                     serviceQueue.offerService(c1); // release the resource to the queue
                 }
 
@@ -72,12 +77,11 @@ public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
                     return f.get();
                 }
                 catch  (CancellationException e) {
-                    cache.remove(arg, f);
+                    cache.remove(key);
                 }
                 catch  (ExecutionException e) {
                     f.cancel(true);
-                    cache.remove(arg, f);
-                    e.printStackTrace();
+                    cache.remove(key);
                     throw new ComputeFailedException(e.getMessage());
                 }
             }

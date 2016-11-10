@@ -1,5 +1,6 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
+import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
 import com.derbysoft.dhp.fileserver.api.support.Computable;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.util.SocketUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -94,7 +96,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
     }
 
 
-    public ResponseEntity<PhantomjsResponse> compute(String params, String urlKey) throws SocketTimeoutException, TimeoutException {
+    public ResponseEntity<PhantomjsResponse> compute(String params, String urlKey) throws SocketTimeoutException, TimeoutException, ComputeFailedException {
         ResponseEntity<PhantomjsResponse> entity = new ResponseEntity<>();
         String host = "127.0.0.1";
         int port = getBindingPort();
@@ -123,8 +125,11 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
             in.close();
         } catch (SocketTimeoutException ste) {
             throw new SocketTimeoutException(ste.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new ComputeFailedException(String.format("Compute call failed, may be the url %s you provided is invalid!\n" +
+                    " usually, there are possibly serval reason for such failure. \n" +
+                    " 1. the url you provided can be accessed through the browser !!\n" +
+                    " 2. Please ensure that the url starts with the standard http:// or https// url", urlKey));
         }
         return entity;
     }

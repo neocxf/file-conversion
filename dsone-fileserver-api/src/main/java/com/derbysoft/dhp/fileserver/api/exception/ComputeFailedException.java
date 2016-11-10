@@ -13,6 +13,6 @@ public class ComputeFailedException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "Compute call failed, the reason is: " +  super.getMessage();
+        return super.getMessage();
     }
 }
