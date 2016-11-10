@@ -27,7 +27,7 @@ public class SwaggerConfig {
 
         return new ApiInfoBuilder().title("DHP FILESERVER API")
                 .description("APi for pdf-converter for Derbysoft company")
-                .termsOfServiceUrl("http://www.jxmobi.com")
+                .termsOfServiceUrl("http://www.derbysoft.com")
                 .contact("neo.chen@derbysoft.com")
                 .license("MIT License")
                 .licenseUrl("http://opensource.org/licenses/MIT")

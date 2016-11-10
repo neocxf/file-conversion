@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Xiaofei Chen <a href="mailto:neocxf@qq.com">Email the author</a>
+ * @author Xiaofei Chen <a href="mailto:neocxf@gmail.com">Email the author</a>
  * @version 1.0 1/10/2016
  */
 @Configuration
@@ -27,7 +27,7 @@ public class SwaggerConfig {
 
         return new ApiInfoBuilder().title("DHP FILESERVER API")
                 .description("APi for pdf-converter for Derbysoft company")
-                .termsOfServiceUrl("http://www.jxmobi.com")
+                .termsOfServiceUrl("http://www.derbysoft.com")
                 .contact("neo.chen@derbysoft.com")
                 .license("MIT License")
                 .licenseUrl("http://opensource.org/licenses/MIT")
