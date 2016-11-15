@@ -130,6 +130,13 @@
         </dependencies>
     </dependencyManagement>
 
+    <distributionManagement>
+        <repository>
+            <id>tomcatServer</id>
+            <url>http://localhost:8080/manager/text</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
 
         <!--<repository>-->
@@ -272,6 +279,10 @@
                 <configuration>
                     <path>/${project.artifactId}</path>
                     <port>${server.port}</port>
+                    <url>http://localhost:${server.port}/manager/text</url>
+                    <server>tomcatServer</server>
+                    <username>neo</username>
+                    <password>password</password>
                 </configuration>
             </plugin>
 
