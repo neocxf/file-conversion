@@ -41,11 +41,11 @@ if (system.args.length !== 2) {
 
         address = params.url;
         output = params.fileName;
-        page.viewportSize = { width: 600, height: 600 };
+        page.viewportSize = { width: 1024, height: 768 };
         if (params.fileName.substr(-4) === ".pdf") {
             size = params.outputSize.split('*');
-            page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '0px' }
-                : { format: params.outputSize, orientation: 'portrait', margin: '1cm' };
+            page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '2cm', border: '1cm' }
+                : { format: params.outputSize, orientation: 'landscape', margin: '1cm' };
         } else if (params.outputSize.substr(-2) === "px") {
             size = params.outputSize.split('*');
             if (size.length === 2) {

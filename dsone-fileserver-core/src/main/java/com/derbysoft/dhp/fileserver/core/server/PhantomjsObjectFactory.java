@@ -46,7 +46,7 @@ public class PhantomjsObjectFactory implements ObjectFactory<PhantomjsClient> {
 
         int generatedPort = SocketUtils.findAvailableTcpPort(port);;
         logger.debug("in make PhantomjsClient, exec: " + exec + ", script: " +  longScript + ", host: " +  host + ", port: " + generatedPort + ", outputsize: " + size);
-        return new PhantomjsClient.PhantomjsClientBuilder(exec, longScript, host, generatedPort).create();
+        return new PhantomjsClient.PhantomjsClientBuilder(exec, longScript, host, generatedPort).withOutputSize(size).create();
     }
 
     @Override

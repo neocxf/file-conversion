@@ -54,7 +54,9 @@ public class FileConverterController {
     public void convertUrlToHtml(HttpServletRequest request, HttpServletResponse response,
                                  @ApiParam(value = "the type of generated file that you need, default is pdf", allowableValues = "pdf, png, jpeg")  @PathVariable("fileType") String fileType,
                                  @ApiParam(value = "the filename of the generated file, default is '_default'")  @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
-                                 @ApiParam(value = "the valid http url address", required = true) @RequestParam("url") String url) throws IOException, InterruptedException, TimeoutException, ExecutionException {
+                                 @ApiParam(value = "the valid http url address", required = true) @RequestParam("url") String url,
+                                 @ApiParam(value = "the output size of the pdf or image", required = false, defaultValue = "1368px*1024px") String outputSize
+                                 ) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String targetFileName = "";
 
         MimeType mimeType = MimeType.get(fileType); // return the MimeType enum object. if the filetype is unknown, return the PNG
@@ -70,7 +72,7 @@ public class FileConverterController {
         } else
             targetFileName = fileName + "." + fileExtension;
 
-        ConverterConfig config = new ConverterConfig(url, targetFileName);
+        ConverterConfig config = new ConverterConfig(url, targetFileName, outputSize);
 
         ResponseEntity<PhantomjsResponse>  entity = serviceExecutor.execute(config, url);
 

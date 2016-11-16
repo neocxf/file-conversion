@@ -21,6 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <server.port>8016</server.port>
+        <deploy.addr>http://localhost:8080/manager/text</deploy.addr>
 
         <!-- Common libs -->
         <commons.io.version>2.5</commons.io.version>
@@ -194,14 +195,14 @@
     </repositories>
 
     <pluginRepositories>
-        <pluginRepository>
-            <id>derbysoft-plugins</id>
-            <name>Spring Snapshots</name>
-            <url>http://10.200.107.56:8081/artifactory/repo/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
+        <!--<pluginRepository>-->
+            <!--<id>derbysoft-plugins</id>-->
+            <!--<name>Spring Snapshots</name>-->
+            <!--<url>http://10.200.107.56:8081/artifactory/repo/</url>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+        <!--</pluginRepository>-->
         <pluginRepository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
@@ -217,17 +218,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
-        <!--<pluginRepository>-->
-        <!--<id>oschina-plugins</id>-->
-        <!--<name>oschina-plugin-repo</name>-->
-        <!--<url>http://maven.oschina.net/content/groups/public/</url>-->
-        <!--<releases>-->
-        <!--<enabled>true</enabled>-->
-        <!--</releases>-->
-        <!--<snapshots>-->
-        <!--<enabled>false</enabled>-->
-        <!--</snapshots>-->
-        <!--</pluginRepository>-->
     </pluginRepositories>
 
     <build>
@@ -279,9 +269,9 @@
                 <configuration>
                     <path>/${project.artifactId}</path>
                     <port>${server.port}</port>
-                    <url>http://localhost:${server.port}/manager/text</url>
+                    <url>${deploy.addr}</url>
                     <server>tomcatServer</server>
-                    <username>neo</username>
+                    <username>dsone</username>
                     <password>password</password>
                 </configuration>
             </plugin>

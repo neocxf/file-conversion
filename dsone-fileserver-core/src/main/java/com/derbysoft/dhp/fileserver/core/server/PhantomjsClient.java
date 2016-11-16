@@ -33,6 +33,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
     private int bindingPort = -1;
     private int connectTimeout = 5000;
     private int readTimeout = 10000;
+    private static String outputSize = "1024px*768px";
 
 
     public PhantomjsClient(PhantomjsClientBuilder builder) throws IOException {
@@ -58,6 +59,10 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         }
 
         bindingPort = builder.port;
+
+        if (builder.outputSize != null) {
+            outputSize = builder.outputSize;
+        }
     }
 
     public Process getProcess() {
@@ -106,7 +111,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         try {
             URL url = new URL("http://" + host + ":"
                     + port + "/");
-            logger.trace("params: " + params + ", urlKey: " + urlKey);
+            logger.debug("params: " + params + ", urlKey: " + urlKey);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setConnectTimeout(connectTimeout);
@@ -212,6 +217,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         private int port;
         private int connectTimeout;
         private int readTimeout;
+        private String outputSize;
 
         protected PhantomjsClientBuilder() {
 
@@ -251,6 +257,11 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
             return this;
         }
 
+        public PhantomjsClientBuilder withOutputSize(String outputSize) {
+            this.outputSize = outputSize;
+            return this;
+        }
+
         public PhantomjsClient create() throws IOException {
             return new PhantomjsClient(this);
         }
@@ -260,7 +271,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
     public static class ConverterConfig {
         private String url;
         private String fileName;
-        private String outputSize = "1920px";
+        private String outputSize;
         private String zoom = "1";
 
         public ConverterConfig() {
@@ -269,6 +280,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         public ConverterConfig(String url, String fileName) {
             this.url = url;
             this.fileName = fileName;
+            this.outputSize = PhantomjsClient.outputSize;
         }
 
         public ConverterConfig(String url, String fileName, String outputSize) {
