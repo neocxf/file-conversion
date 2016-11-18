@@ -1,0 +1,10 @@
+fileserver:
+    image: neo.chen/phantom-jre8:2.1.1
+    container_name: fileserver
+    working_dir: /app
+    ports:
+      - "8081:80"
+    volumes:
+      - ../dsone-fileserver-boot/target/dsone-fileserver-boot-1.0.3.jar:/app/fileserver.jar
+    net: "host"
+    command: java -jar fileserver.jar --server.port=8081
