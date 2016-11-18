@@ -1,5 +1,5 @@
 fileserver:
-    image: neo.chen/phantom-jre8:2.1.1
+    image: neocxf/phantom-jre8:2.1.1
     container_name: fileserver
     working_dir: /app
     ports:
