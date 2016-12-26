@@ -1,18 +1,18 @@
-#[dsone-pdf-converter](https://git.derbysoft.tm/DHP/dsone-fileserver)
+[dsone-pdf-converter](https://git.derbysoft.tm/DHP/dsone-fileserver)
 
 provide html-pdf conversion service
 
 ## prerequisite
 
 - maven installed
-- docker installed (optional, needed if you run [Docker way](id:jar)
+- docker installed (optional, needed if you run [Docker way](#jar)
 - docker-compose installed (same as above)
 
 ## How to use
 
 There are two way to use this project. One way is build the project as an war file adn deploy to tomcat container. The second way is deploying in docker container.
 
-### [Traditional way (war deployed)](#war)
+### [Traditional way (war deployed)](id:war)
    Make sure that the phantomjs package is installed, and `/usr/local/phantomjs --version` works
 ```bash
 $ git clone https://git.derbysoft.tm/dhp/dsone-fileserver
@@ -24,7 +24,7 @@ $ cp dsone-fileserver-web/target/dsone-fileserver-web-${project.version}.war ${t
 $ service tomcat restart
 ```    
 
-### [Docker way (jar deployed)](#jar)
+### [Docker way (jar deployed)](id:jar)
 ```bash
 $ git clone https://git.derbysoft.tm/dhp/dsone-fileserver
 $ cd fileserver/docker
