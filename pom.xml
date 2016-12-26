@@ -140,31 +140,31 @@
 
     <repositories>
 
-        <!--<repository>-->
-            <!--<id>dh-repo</id>-->
-            <!--<url>http://10.200.107.56:8081/artifactory/repo</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-                <!--<updatePolicy>daily</updatePolicy>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
-        <!--<repository>-->
-            <!--<id>Maven2</id>-->
-            <!--<name>Maven2-releases</name>-->
-            <!--<url>http://maven.derbysoft.tm/artifactory/libs-release-local</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
+        <repository>
+            <id>dh-repo</id>
+            <url>http://10.200.107.56:8081/artifactory/repo</url>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>Maven2</id>
+            <name>Maven2-releases</name>
+            <url>http://maven.derbysoft.tm/artifactory/libs-release-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
 
-        <!--<repository>-->
-            <!--<id>derbysoft</id>-->
-            <!--<name>Maven2-releases</name>-->
-            <!--<url>http://10.200.107.43/artifactory/libs-release-local</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
+        <repository>
+            <id>derbysoft</id>
+            <name>Maven2-releases</name>
+            <url>http://10.200.107.43/artifactory/libs-release-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
 
         <repository>
             <id>io.spring.repo.maven.release</id>

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 
 /**
  *  entry point of annotation-based servlet 3.0 container.
@@ -16,6 +17,7 @@ import javax.servlet.*;
  *
  *  good staff come here: http://www.robinhowlett.com/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/
  */
+@WebServlet
 public class FileServerInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     private static final Logger logger = LoggerFactory.getLogger(FileServerInitializer.class);
 
@@ -25,6 +27,8 @@ public class FileServerInitializer extends AbstractAnnotationConfigDispatcherSer
 
 //        container.addFilter("urlRewriteFilter", UrlRewriteFilter.class).addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE), false, "/*");
     }
+
+
 
     @Override
 	protected Class<?>[] getServletConfigClasses() {
