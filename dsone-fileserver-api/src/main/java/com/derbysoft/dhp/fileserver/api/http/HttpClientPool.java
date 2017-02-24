@@ -1,22 +1,21 @@
-package com.derbysoft.dhp.fileserver.client.http;
+package com.derbysoft.dhp.fileserver.api.http;
 
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  *
  * @author neo.fei {neocxf@gmail.com}
  */
 public class HttpClientPool {
-    private static final Logger logger = LoggerFactory.getLogger(HttpClientPool.class);
+    private static final Logger logger = Logger.getLogger(InnerLoggerSetting.HTTP_LOGGER_NAME);
     // Single-element enum to implement Singleton.
     private static enum Singleton {
         // Just one of me so constructor will be called once.
@@ -27,7 +26,7 @@ public class HttpClientPool {
         private final IdleConnectionMonitorThread monitor;
 
         // The constructor creates it - thus late
-        private Singleton() {
+        Singleton() {
             PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
             // Increase max total connection to 200
             cm.setMaxTotal(200);
@@ -98,7 +97,7 @@ public class HttpClientPool {
                     // Optionally, close connections that have been idle too long.
                     cm.closeIdleConnections(60, TimeUnit.SECONDS);
                     // Look at pool stats.
-                    logger.trace("Stats: {}", cm.getTotalStats());
+                    logger.finer("Stats: {}" + cm.getTotalStats());
                 }
                 // Acknowledge the stop request.
                 stopRequest.stopped();
@@ -119,7 +118,7 @@ public class HttpClientPool {
             HttpClientUtils.closeQuietly(HttpClientPool.getClient());
             // Close the connection manager.
             cm.close();
-            logger.debug("Http Client pool shut down");
+            logger.finer("Http Client pool shut down");
         }
 
     }

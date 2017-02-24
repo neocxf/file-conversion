@@ -12,6 +12,7 @@
         <module>dsone-fileserver-web</module>
         <module>dsone-fileserver-api</module>
         <module>dsone-fileserver-boot</module>
+        <module>dsone-fileserver-config</module>
     </modules>
 
     <packaging>pom</packaging>

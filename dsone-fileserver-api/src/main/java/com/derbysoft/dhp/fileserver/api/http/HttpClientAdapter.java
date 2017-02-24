@@ -1,33 +1,25 @@
-package com.derbysoft.dhp.fileserver.client.http;
+package com.derbysoft.dhp.fileserver.api.http;
 
-import com.derbysoft.dhp.fileserver.api.support.ObjectFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author neo.fei {neocxf@gmail.com}
  */
-@Component
 public class HttpClientAdapter {
-    private static final Logger logger = LoggerFactory.getLogger(HttpClientAdapter.class);
+    private static final Logger logger = Logger.getLogger(InnerLoggerSetting.HTTP_LOGGER_NAME);
 
     private CloseableHttpClient httpClient;
-
-    @Autowired
-    ObjectFactory<CloseableHttpClient> clientFactory;
 
     /**
      *  handle the post request, default use {@link UrlEncodedFormEntity}
@@ -62,18 +54,4 @@ public class HttpClientAdapter {
         }
     }
 
-//    @PostConstruct
-//    private void initializeClient() {
-//        try {
-//            httpClient = clientFactory.create();
-//        } catch (IOException e) {
-//            logger.error(" error when trying to create the HttpClient .");
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @PreDestroy
-//    private void closeClient() {
-//        clientFactory.destroy(httpClient);
-//    }
 }

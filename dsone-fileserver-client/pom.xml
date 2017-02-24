@@ -38,7 +38,7 @@
 
         <dependency>
             <groupId>com.derbysoft.dhp</groupId>
-            <artifactId>dsone-fileserver-api</artifactId>
+            <artifactId>dsone-fileserver-config</artifactId>
             <version>1.0.3</version>
         </dependency>
 

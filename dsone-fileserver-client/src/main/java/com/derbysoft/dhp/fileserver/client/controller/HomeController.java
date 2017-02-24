@@ -1,8 +1,8 @@
 package com.derbysoft.dhp.fileserver.client.controller;
 
 import com.derbysoft.dhp.fileserver.api.filter.ServletStringWrapper;
-import com.derbysoft.dhp.fileserver.client.http.HttpClientAdapter;
-import com.derbysoft.dhp.fileserver.client.http.RemoteEnvArgs;
+import com.derbysoft.dhp.fileserver.api.http.HttpClientAdapter;
+import com.derbysoft.dhp.fileserver.client.config.RemoteEnvArgs;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.AbstractResponseHandler;

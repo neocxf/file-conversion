@@ -1,4 +1,4 @@
-package com.derbysoft.dhp.fileserver.client.http;
+package com.derbysoft.dhp.fileserver.client.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
