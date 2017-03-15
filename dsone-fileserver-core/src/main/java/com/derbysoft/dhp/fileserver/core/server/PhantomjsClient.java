@@ -2,6 +2,7 @@ package com.derbysoft.dhp.fileserver.core.server;
 
 import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
 import com.derbysoft.dhp.fileserver.api.support.Computable;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
@@ -13,7 +14,6 @@ import org.springframework.util.SocketUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author neo.fei {neocxf@gmail.com}
  */
-public class PhantomjsClient implements Computable<String, String, ResponseEntity<PhantomjsResponse>> {
+public class PhantomjsClient implements Computable<String, FileConverterKey, ResponseEntity<PhantomjsResponse>> {
     private static final Logger logger = LoggerFactory.getLogger(PhantomjsClient.class);
 
     private Process process;
@@ -101,7 +101,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
     }
 
 
-    public ResponseEntity<PhantomjsResponse> compute(String params, String urlKey) throws SocketTimeoutException, TimeoutException, ComputeFailedException {
+    public ResponseEntity<PhantomjsResponse> compute(String params, FileConverterKey converterKey) throws SocketTimeoutException, TimeoutException, ComputeFailedException {
         ResponseEntity<PhantomjsResponse> entity = new ResponseEntity<>();
         String host = "127.0.0.1";
         int port = getBindingPort();
@@ -111,7 +111,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
         try {
             URL url = new URL("http://" + host + ":"
                     + port + "/");
-            logger.debug("params: " + params + ", urlKey: " + urlKey);
+            logger.debug("params: " + params + ", converterKey: " + converterKey);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setConnectTimeout(connectTimeout);
@@ -134,7 +134,7 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
             throw new ComputeFailedException(String.format("Compute call failed, may be the url %s you provided is invalid!\n" +
                     " usually, there are possibly serval reason for such failure. \n" +
                     " 1. the url you provided can be accessed through the browser !!\n" +
-                    " 2. Please ensure that the url starts with the standard http:// or https// url", urlKey));
+                    " 2. Please ensure that the url starts with the standard http:// or https// url", converterKey));
         }
         return entity;
     }
@@ -308,6 +308,14 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
             int result = url != null ? url.hashCode() : 0;
             result = 31 * result + (fileType != null ? fileType.hashCode() : 0);
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return "FileConverterKey{" +
+                    "url='" + url + '\'' +
+                    ", fileType='" + fileType + '\'' +
+                    '}';
         }
     }
 

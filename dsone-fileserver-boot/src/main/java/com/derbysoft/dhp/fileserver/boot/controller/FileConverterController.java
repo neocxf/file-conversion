@@ -4,6 +4,7 @@ import com.derbysoft.dhp.fileserver.api.FileServerGatewayConstants;
 import com.derbysoft.dhp.fileserver.api.support.ObjectFactory;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsServiceExecutor;
@@ -71,8 +72,9 @@ public class FileConverterController {
             targetFileName = fileName + "." + fileExtension;
 
         ConverterConfig config = new ConverterConfig(url, targetFileName);
+        FileConverterKey key = new FileConverterKey(url, fileExtension);
 
-        ResponseEntity<PhantomjsResponse>  entity = serviceExecutor.execute(config, url);
+        ResponseEntity<PhantomjsResponse>  entity = serviceExecutor.execute(config, key);
 
         int responseCode = entity.getStatusCode();
 
@@ -83,7 +85,6 @@ public class FileConverterController {
         PhantomjsResponse phantomjsResponse = entity.of(PhantomjsResponse.class);
 
         targetFileName = phantomjsResponse.getFileName(); // get the cached file name
-
 
         String longFileName = TempDir.getDownloadLink(targetFileName);
 

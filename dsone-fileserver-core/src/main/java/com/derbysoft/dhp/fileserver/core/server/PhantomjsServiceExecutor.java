@@ -4,6 +4,7 @@ import com.derbysoft.dhp.fileserver.api.support.CacheFutureMemorizer;
 import com.derbysoft.dhp.fileserver.api.support.Computable;
 import com.derbysoft.dhp.fileserver.api.support.ServiceQueue;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.google.gson.Gson;
@@ -31,19 +32,19 @@ public class PhantomjsServiceExecutor implements InitializingBean, ApplicationCo
 
     private ApplicationContext applicationContext;
 
-    private CacheFutureMemorizer<String, String, ResponseEntity<PhantomjsResponse>> memorizer;
+    private CacheFutureMemorizer<String, FileConverterKey, ResponseEntity<PhantomjsResponse>> memorizer;
 
     @Autowired private Gson gson;
 
-    public ResponseEntity<PhantomjsResponse> execute(ConverterConfig configVo, final String url) throws InterruptedException {
+    public ResponseEntity<PhantomjsResponse> execute(ConverterConfig configVo, final FileConverterKey converterKey) throws InterruptedException {
 
         String jsonStr = gson.toJson(configVo);
 
         logger.trace(" params: {} " + jsonStr);
-        logger.trace(" url: {} " + url);
+        logger.trace(" key info: {} " + converterKey);
 
         logger.debug(" inspect the cache pool for Phantomjs converter ...");
-        Map<String, Future<ResponseEntity<PhantomjsResponse>>> cache = memorizer.getResourceCache();
+        Map<FileConverterKey, Future<ResponseEntity<PhantomjsResponse>>> cache = memorizer.getResourceCache();
         cache.forEach((key, future) -> {
             try {
                 logger.debug(key + " --------> " + future.get().of(PhantomjsResponse.class).getFileName());
@@ -52,7 +53,7 @@ public class PhantomjsServiceExecutor implements InitializingBean, ApplicationCo
             }
         });
 
-        return memorizer.compute(jsonStr, url);
+        return memorizer.compute(jsonStr, converterKey);
 
     }
 
@@ -63,8 +64,8 @@ public class PhantomjsServiceExecutor implements InitializingBean, ApplicationCo
         logger.debug(" PhantomjsServiceExecutor initialized ...");
 
         Executor executorPool = applicationContext.getBean("executorPool", Executor.class);
-        ServiceQueue<Computable<String, String, ResponseEntity<PhantomjsResponse>>> serviceQueue = applicationContext.getBean("serviceQueue", ServiceQueue.class);
-        ConcurrentMap<String, Future<ResponseEntity<PhantomjsResponse>>> phantomjsClientCacheMap = applicationContext.getBean("phantomjsClientCacheMap", ConcurrentMap.class);
+        ServiceQueue<Computable<String, FileConverterKey, ResponseEntity<PhantomjsResponse>>> serviceQueue = applicationContext.getBean("serviceQueue", ServiceQueue.class);
+        ConcurrentMap<FileConverterKey, Future<ResponseEntity<PhantomjsResponse>>> phantomjsClientCacheMap = applicationContext.getBean("phantomjsClientCacheMap", ConcurrentMap.class);
         this.memorizer = new CacheFutureMemorizer<>(phantomjsClientCacheMap, executorPool, serviceQueue);
     }
 

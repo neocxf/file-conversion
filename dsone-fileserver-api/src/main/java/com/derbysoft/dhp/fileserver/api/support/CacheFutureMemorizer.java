@@ -7,8 +7,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.*;
 
+
 /**
- * cache impl for
+ * cache impl for future calculation (time-consuming, expensive action)
+ *
+ * @param <A> the argument of the computation take
+ * @param <K> the key to identify the computation process in case of cache
+ * @param <V> the computation result
  * @author neo.fei {neocxf@gmail.com}
  */
 public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
