@@ -5,6 +5,6 @@ fileserver:
     ports:
       - "8091:80"
     volumes:
-      - ../dsone-fileserver-boot/target/dsone-fileserver-boot-1.0.3.jar:/app/fileserver.jar
+      - ../dsone-fileserver-boot/target/dsone-fileserver-boot.jar:/app/fileserver.jar
     net: "host"
     command: java -jar fileserver.jar --server.port=8091

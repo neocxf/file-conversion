@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
  */
 @Configuration
 @ComponentScan(basePackages = "com.derbysoft.dhp.fileserver.api.http")
-@EnableAsync
 public class PdfConverterConfig {
 
     @Bean

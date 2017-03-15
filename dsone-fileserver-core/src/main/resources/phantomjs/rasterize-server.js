@@ -9,6 +9,8 @@ page.onResourceError = function(resourceError) {
     page.reason_url = resourceError.url;
 };
 
+// rather than provide the rough 5000 millseconds, we can use some else like monitoring specific .class attribute change
+// through https://github.com/ryanmorr/ready
 page.settings.resourceTimeout = 5000; // 5 seconds
 
 page.onResourceTimeout = function(e) {
@@ -44,7 +46,7 @@ if (system.args.length !== 2) {
         page.viewportSize = { width: 1024, height: 768 };
         if (params.fileName.substr(-4) === ".pdf") {
             size = params.outputSize.split('*');
-            page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '2cm', border: '1cm' }
+            page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '1cm', border: '1cm' }
                 : { format: params.outputSize, orientation: 'landscape', margin: '1cm' };
         } else if (params.outputSize.substr(-2) === "px") {
             size = params.outputSize.split('*');
