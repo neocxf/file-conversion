@@ -32,22 +32,6 @@ class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
-    /**
-     * Catch all for any other exceptions...
-     */
-//    @ExceptionHandler({ Exception.class })
-//    @ResponseBody
-//    public ResponseEntity<?> handleAnyException(Exception ex) {
-//        ErrorDetail errorDetail = new ErrorDetail();
-//        // Populate errorDetail instance
-//        errorDetail.setTimestamp(new Date().getTime());
-//        errorDetail.setTitle("服务器程序内部发生异常，请联系开发者");
-//        errorDetail.setDetail(ex.getMessage());
-//        errorDetail.setDeveloperMessage(ex.getClass().getName());
-//
-//        return new ResponseEntity<Object>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
-
     protected <E extends Exception> ResponseEntity<ErrorDetail> errorsResponseEntity (E e, HttpStatus statusCode, String  logref) {
         MediaType mediaType = MediaType.parseMediaType("application/vnd.errors");
 

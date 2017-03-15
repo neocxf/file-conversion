@@ -268,6 +268,49 @@ public class PhantomjsClient implements Computable<String, String, ResponseEntit
 
     }
 
+    /**
+     *  the {@link FileConverterKey} was used to identified whether the coming-converting request has already been cached
+     */
+    public static class FileConverterKey {
+        private String url;
+        private String fileType;
+
+        public FileConverterKey() {}
+
+        public FileConverterKey(String url, String fileType) {
+            this.url = url;
+            this.fileType = fileType;
+        }
+
+        public FileConverterKey withUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public FileConverterKey withFileType(String fileType) {
+            this.fileType = fileType;
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            FileConverterKey that = (FileConverterKey) o;
+
+            if (url != null ? !url.equals(that.url) : that.url != null) return false;
+            return fileType != null ? fileType.equals(that.fileType) : that.fileType == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = url != null ? url.hashCode() : 0;
+            result = 31 * result + (fileType != null ? fileType.hashCode() : 0);
+            return result;
+        }
+    }
+
     public static class ConverterConfig {
         private String url;
         private String fileName;

@@ -19,6 +19,8 @@ import java.util.logging.Logger;
 public class HttpClientAdapter {
     private static final Logger logger = Logger.getLogger(InnerLoggerSetting.HTTP_LOGGER_NAME);
 
+    private static final String CHARSET = "UTF-8";
+
     private CloseableHttpClient httpClient;
 
     /**
@@ -31,7 +33,7 @@ public class HttpClientAdapter {
      */
     public void handlePostRequest(final String uri ,final List<NameValuePair> paramPairs, AbstractResponseHandler<?> responseHandler) throws UnsupportedEncodingException {
         HttpPost request = new HttpPost(uri);
-        UrlEncodedFormEntity reqEntity = new UrlEncodedFormEntity(paramPairs);
+        UrlEncodedFormEntity reqEntity = new UrlEncodedFormEntity(paramPairs, CHARSET);
         request.setEntity(reqEntity);
         try {
             httpClient.execute(request, responseHandler);

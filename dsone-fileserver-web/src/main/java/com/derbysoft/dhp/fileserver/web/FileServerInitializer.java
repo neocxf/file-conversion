@@ -13,9 +13,6 @@ import javax.servlet.annotation.WebServlet;
  *
  *  here, we start the spring bean container, and WebServletContext
  *
- *  http://www.rockhoppertech.com/blog/spring-mvc-configuration-without-xml/
- *
- *  good staff come here: http://www.robinhowlett.com/blog/2013/02/13/spring-app-migration-from-xml-to-java-based-config/
  */
 @WebServlet
 public class FileServerInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -24,15 +21,10 @@ public class FileServerInitializer extends AbstractAnnotationConfigDispatcherSer
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         super.onStartup(container);
-
-//        container.addFilter("urlRewriteFilter", UrlRewriteFilter.class).addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE), false, "/*");
     }
-
-
 
     @Override
 	protected Class<?>[] getServletConfigClasses() {
-        logger.info(" config the web initializer");
 		return new Class[] { SpringWebConfig.class };
 	}
 

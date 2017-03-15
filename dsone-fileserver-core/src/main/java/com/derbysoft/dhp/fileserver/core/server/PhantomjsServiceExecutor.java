@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -32,9 +33,9 @@ public class PhantomjsServiceExecutor implements InitializingBean, ApplicationCo
 
     private CacheFutureMemorizer<String, String, ResponseEntity<PhantomjsResponse>> memorizer;
 
-    public ResponseEntity<PhantomjsResponse> execute(ConverterConfig configVo, final String url) throws InterruptedException {
+    @Autowired private Gson gson;
 
-        Gson gson = new Gson();
+    public ResponseEntity<PhantomjsResponse> execute(ConverterConfig configVo, final String url) throws InterruptedException {
 
         String jsonStr = gson.toJson(configVo);
 
