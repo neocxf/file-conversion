@@ -20,7 +20,6 @@ page.onResourceTimeout = function(e) {
     // phantom.exit(1);
 };
 
-
 if (system.args.length !== 2) {
     console.log('Usage: simpleserver.js <portnumber>');
     phantom.exit(1);
@@ -39,7 +38,6 @@ if (system.args.length !== 2) {
         console.log(params.fileName);
         console.log(params.outputSize);
         console.log(params.zoom);
-
 
         address = params.url;
         output = params.fileName;
@@ -70,11 +68,6 @@ if (system.args.length !== 2) {
         page.open(address, function (status) {
             console.log('Phantomjs server return status: {} ' + status);
 
-            // response.headers = {
-            //     'Cache': 'no-cache',
-            //     'Content-Type': 'text/html'
-            // };
-
             response.headers = {
                 'Cache': 'no-cache',
                 'Content-Type': 'application/json'
@@ -99,55 +92,36 @@ if (system.args.length !== 2) {
 
                 response.close();
 
-
-                // response.write('<html>');
-                // response.write('<head>');
-                // response.write('<title>Error Page</title>');
-                // response.write('</head>');
-                // response.write('<body>');
-                // response.write('<p>The page you are looking does not exist.</p>');
-                // response.write('</body>');
-                // response.write('</html>');
-                //
-                // response.close();
             }
             else {
 
                 console.log("address: {} " + address);
 
                 window.setTimeout(function () {
-                    page.render(output);
-                    // phantom.exit();
+                    var renderSuccess = page.render(output);
+                    console.log('render success: ? ' + renderSuccess);
+                    renderSuccess = true;
+                    if (renderSuccess) {
+                        entity.statusCode = 200;
+                        entity.msg = " the page with url: " + params.url + " has been successfully rendered";
+                        entity.url = params.url;
+                        entity.fileName = params.fileName;
 
-                    entity.statusCode = 200;
-                    entity.msg = " the page with url: " + params.url + " has been successfully rendered";
-                    entity.url = params.url;
-                    entity.fileName = params.fileName;
+                        // normal way of writing json to the end peer
+                        response.statusCode = 200;
+                        response.write(JSON.stringify(entity, null, 4));
+                        response.close();
 
-                    // normal way of writing json to the end peer
-                    response.statusCode = 200;
-                    response.write(JSON.stringify(entity, null, 4));
-                    response.close();
+                    } else {
+                        entity.statusCode = 404;
+                        entity.msg = " the page with url: " + params.url + " failed rendered";
+                        entity.url = params.url;
+                        entity.fileName = params.fileName;
 
-                    // Node.js way of writing to the end peer, not working
-                    // response.writeHead(200, {"Content-Type": "application/json"});
-                    // response.end(entity);
-
-                    // 3rd approach: return the text/html page
-                    // response.statusCode = 200;
-                    // response.write('<html>');
-                    // response.write('<head>');
-                    // response.write('<title>Hello, world!</title>');
-                    // response.write('</head>');
-                    // response.write('<body>');
-                    // response.write('<p>This is from PhantomJS web server.</p>');
-                    // response.write('<p>Request data:</p>');
-                    // response.write('<pre>');
-                    // response.write(JSON.stringify(request, null, 4));
-                    // response.write('</pre>');
-                    // response.write('</body>');
-                    // response.write('</html>');
-                    // response.close();
+                        response.statusCode = 202;
+                        response.write(JSON.stringify(entity, null, 4));
+                        response.close();
+                    }
 
                 }, 200);
             }

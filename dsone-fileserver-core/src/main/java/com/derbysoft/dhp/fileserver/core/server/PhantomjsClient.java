@@ -2,6 +2,7 @@ package com.derbysoft.dhp.fileserver.core.server;
 
 import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
 import com.derbysoft.dhp.fileserver.api.support.Computable;
+import com.derbysoft.dhp.fileserver.core.exception.PhantomRenderException;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
@@ -122,19 +123,32 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             OutputStream out = connection.getOutputStream();
             out.write(params.getBytes("utf-8"));
             out.close();
-            InputStream in = connection.getInputStream();
+
+            if (connection.getResponseCode() > 400) {
+                logger.error("Phantomjs Client serve at port{} " + port  + " failed to render the page " + converterKey.getUrl() + ", give the response: {} "
+                        + connection.getResponseMessage() + ", and response code: {} " + connection.getResponseCode());
+
+                throw new PhantomRenderException(String.format("Compute call failed, may be the url %s you provided is invalid!" +
+                        " usually, there are possibly serval reason for such failure. " +
+                        " 1. the url you provided can be accessed through the browser !!" +
+                        " 2. Please ensure that the url starts with the standard http:// or https// url", converterKey.getUrl()), converterKey);
+            }
+
+            InputStream in = connection.getInputStream(); // if the responseCode is 404, then it may cause a FileNotFoundException, and this clause will not be executed
             String response = IOUtils.toString(in, "utf-8");
+
             entity.setStatusCode(connection.getResponseCode());
             entity.setResponse(response);
+
             logger.info("Phantomjs Client serve at port{} " + port  + " give the response: " + connection.getResponseMessage() + ", " + connection.getResponseCode());
             in.close();
         } catch (SocketTimeoutException ste) {
             throw new SocketTimeoutException(ste.getMessage());
         } catch (IOException e) {
-            throw new ComputeFailedException(String.format("Compute call failed, may be the url %s you provided is invalid!\n" +
-                    " usually, there are possibly serval reason for such failure. \n" +
-                    " 1. the url you provided can be accessed through the browser !!\n" +
-                    " 2. Please ensure that the url starts with the standard http:// or https// url", converterKey));
+            // here we throw the customized exception in case of 404 response, note that the throw here may be not intercepted by the ExceptionHandler
+            // since, all the flow here were encapsulated at multi-threaded environment for ExecutionException
+            // So, if you want to actually throw the exception and let the ExceptionHandler method catch the exception, you have to throw again
+            throw new PhantomRenderException(e.getMessage(),  converterKey);
         }
         return entity;
     }
@@ -290,6 +304,14 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
         public FileConverterKey withFileType(String fileType) {
             this.fileType = fileType;
             return this;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getFileType() {
+            return fileType;
         }
 
         @Override

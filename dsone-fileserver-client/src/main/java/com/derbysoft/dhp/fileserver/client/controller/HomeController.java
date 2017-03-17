@@ -49,6 +49,7 @@ public class HomeController {
         String content = responseWrapper.toString();
 
         List<NameValuePair> reqParams = new ArrayList<>();
+        reqParams.add(new BasicNameValuePair("fileName", String.valueOf(System.currentTimeMillis())));
         reqParams.add(new BasicNameValuePair("content", content));
 
         httpClientAdapter.handlePostRequest(remoteEnvArgs.getPdfTransformerAddr(), reqParams, new AbstractResponseHandler<Object>() {

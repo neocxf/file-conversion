@@ -68,8 +68,9 @@ public class CacheFutureMemorizer<A, K, V> implements Computable<A, K, V> {
                 }
                 catch  (ExecutionException e) {
                     f.cancel(true);
+                    // the cache remove may trigger the iteration of the map which may cause another time ExecutionException
+                    // but after this step, the stale and error task will be removed
                     cache.remove(key);
-
                     throw new ComputeFailedException(e.getMessage());
                 }
                 finally {

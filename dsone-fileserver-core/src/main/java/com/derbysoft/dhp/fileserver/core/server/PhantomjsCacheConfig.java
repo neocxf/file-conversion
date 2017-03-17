@@ -1,5 +1,6 @@
 package com.derbysoft.dhp.fileserver.core.server;
 
+import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ResponseEntity;
 import com.derbysoft.dhp.fileserver.core.util.TempDir;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class PhantomjsCacheConfig {
     private static final Logger logger = LoggerFactory.getLogger(PhantomjsCacheConfig.class);
 
-    private Cache<String, Future<ResponseEntity<PhantomjsResponse>>> cache;
+    private Cache<FileConverterKey, Future<ResponseEntity<PhantomjsResponse>>> cache;
 
     /**
      *  guava cache config, provide basic features as follows:
@@ -37,10 +38,10 @@ public class PhantomjsCacheConfig {
      * @return the map which is governed by the guava cache
      */
     @Bean(name = "phantomjsClientCacheMap")
-    public ConcurrentMap<String, Future<ResponseEntity<PhantomjsResponse>>> concurrentMap() {
+    public ConcurrentMap<FileConverterKey, Future<ResponseEntity<PhantomjsResponse>>> concurrentMap() {
         cache =  CacheBuilder.newBuilder()
                 .expireAfterAccess(1, TimeUnit.HOURS)
-                .removalListener((RemovalListener<String, Future<ResponseEntity<PhantomjsResponse>>>) notification -> {
+                .removalListener((RemovalListener<FileConverterKey, Future<ResponseEntity<PhantomjsResponse>>>) notification -> {
                     Future<ResponseEntity<PhantomjsResponse>> future = notification.getValue();
                     assert future != null;
                     assert future.isDone();
@@ -55,14 +56,15 @@ public class PhantomjsCacheConfig {
                         logger.debug(" removing [" + response.getFileName() + "] from the cache" );
 
                         boolean deleteSuccess = Paths.get(longFileName).toFile().delete();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
+                    } catch (ExecutionException | InterruptedException e) {
+                        // we can now ignore the ExecutionException, since we may call the remove when we find the task failed for some reason
+                        // so, when system calls removal for failure ops, we should just silent swoop the exception
                     }
 
                 })
-                .build(new CacheLoader<String, Future<PhantomjsClient.ResponseEntity<PhantomjsClient.PhantomjsResponse>>>() {
+                .build(new CacheLoader<FileConverterKey, Future<ResponseEntity<PhantomjsResponse>>>() {
                     @Override
-                    public  Future<PhantomjsClient.ResponseEntity<PhantomjsClient.PhantomjsResponse>> load(String key) throws Exception {
+                    public  Future<ResponseEntity<PhantomjsResponse>> load(FileConverterKey key) throws Exception {
                         return null;
                     }
                 });
