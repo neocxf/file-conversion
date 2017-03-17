@@ -47,19 +47,21 @@ if (system.args.length !== 2) {
             page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '1cm', border: '1cm' }
                 : { format: params.outputSize, orientation: 'landscape', margin: '1cm' };
         } else if (params.outputSize.substr(-2) === "px") {
-            size = params.outputSize.split('*');
-            if (size.length === 2) {
-                pageWidth = parseInt(size[0], 10);
-                pageHeight = parseInt(size[1], 10);
-                page.viewportSize = { width: pageWidth, height: pageHeight };
-                page.clipRect = { top: 0, left: 0, width: pageWidth, height: pageHeight };
-            } else {
-                console.log("size:", params.outputSize);
-                pageWidth = parseInt(params.outputSize, 10);
-                pageHeight = parseInt(pageWidth * 3/4, 10); // it's as good an assumption as any
-                console.log ("pageHeight:",pageHeight);
-                page.viewportSize = { width: pageWidth, height: pageHeight };
-            }
+            // if the output file type is jpeg or png, just ignore the output size setting, show the whole image
+
+            // size = params.outputSize.split('*');
+            // if (size.length === 2) {
+            //     pageWidth = parseInt(size[0], 10);
+            //     pageHeight = parseInt(size[1], 10);
+            //     page.viewportSize = { width: pageWidth, height: pageHeight };
+            //     page.clipRect = { top: 0, left: 0, width: pageWidth, height: pageHeight };
+            // } else {
+            //     console.log("size:", params.outputSize);
+            //     pageWidth = parseInt(params.outputSize, 10);
+            //     pageHeight = parseInt(pageWidth * 3/4, 10); // it's as good an assumption as any
+            //     console.log ("pageHeight:",pageHeight);
+            //     page.viewportSize = { width: pageWidth, height: pageHeight };
+            // }
         }
 
         page.zoomFactor = params.zoom;

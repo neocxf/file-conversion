@@ -2,6 +2,7 @@ package com.derbysoft.dhp.fileserver.api.http;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -29,17 +30,27 @@ public class HttpClientAdapter {
      * @param uri the post uri
      * @param paramPairs post params
      * @param responseHandler hook handler of the response
-     * @throws UnsupportedEncodingException
+     * @throws IOException if the http post request fail for some reason
      */
-    public void handlePostRequest(final String uri ,final List<NameValuePair> paramPairs, AbstractResponseHandler<?> responseHandler) throws UnsupportedEncodingException {
+    public void handlePostRequest(final String uri ,final List<NameValuePair> paramPairs, AbstractResponseHandler<?> responseHandler) throws IOException {
         HttpPost request = new HttpPost(uri);
         UrlEncodedFormEntity reqEntity = new UrlEncodedFormEntity(paramPairs, CHARSET);
         request.setEntity(reqEntity);
-        try {
-            httpClient.execute(request, responseHandler);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        httpClient.execute(request, responseHandler);
+
+    }
+
+    /**
+     *  handle the get request
+     * @param uri the get uri
+     * @param responseHandler hook callback handler of the response
+     * @throws IOException if the http get request fail for some reason
+     */
+    public void handleGetRequest(final String uri, AbstractResponseHandler<?> responseHandler) throws IOException {
+        HttpGet request = new HttpGet(uri);
+
+        httpClient.execute(request, responseHandler);
     }
 
     @PostConstruct
