@@ -133,10 +133,20 @@
     </dependencyManagement>
 
     <distributionManagement>
-        <repository>
+        <!--<repository>
             <id>tomcatServer</id>
             <url>http://localhost:8080/manager/text</url>
+        </repository>-->
+        <repository>
+            <id>dhp</id>
+            <name>dhp-release</name>
+            <url>http://10.200.107.56:8081/artifactory/libs-release-local</url>
         </repository>
+        <snapshotRepository>
+            <id>dhp</id>
+            <name>dhp-snapshot</name>
+            <url>http://10.200.107.56:8081/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <repositories>
