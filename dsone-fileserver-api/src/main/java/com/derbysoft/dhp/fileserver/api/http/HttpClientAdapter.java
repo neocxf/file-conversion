@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
+ *  Adapter for dealing with remote http request.
+ *
+ *  As developing in spring world, expose this class as a bean, and reuse it as mush as possible. All the lifecycle of the instance
+ *  has already been taken care of.
+ *
  * @author neo.fei {neocxf@gmail.com}
  */
 public class HttpClientAdapter {

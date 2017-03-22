@@ -1,5 +1,5 @@
 "use strict";
-var port, server, service,
+var port, server, service, resolveTime,
     address, output, size, pageWidth, pageHeight,
     system = require('system'),
     page = require('webpage').create();
@@ -34,13 +34,9 @@ if (system.args.length !== 2) {
 
         var params = JSON.parse(request.post);
 
-        console.log(params.url);
-        console.log(params.fileName);
-        console.log(params.outputSize);
-        console.log(params.zoom);
-
         address = params.url;
         output = params.fileName;
+        resolveTime = params.resolveTime;
         page.viewportSize = { width: 1024, height: 768 };
         if (params.fileName.substr(-4) === ".pdf") {
             size = params.outputSize.split('*');
@@ -125,7 +121,7 @@ if (system.args.length !== 2) {
                         response.close();
                     }
 
-                }, 200);
+                }, resolveTime);
             }
         });
 

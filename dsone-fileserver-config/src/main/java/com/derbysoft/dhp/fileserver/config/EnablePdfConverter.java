@@ -1,5 +1,6 @@
 package com.derbysoft.dhp.fileserver.config;
 
+import com.derbysoft.dhp.fileserver.api.http.HttpClientAdapter;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -7,6 +8,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ *  used to export {@link HttpClientAdapter} as a bean.
+ *
+ *
  * @author neo.fei {neocxf@gmail.com}
  * @version 2/24/17
  */

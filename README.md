@@ -1,6 +1,6 @@
 # [dsone-pdf-converter](https://git.derbysoft.tm/DHP/dsone-fileserver)
 
-provide html-pdf conversion service
+provide html-pdf, html-png, html-jpeg conversion service 
 
 ## prerequisite
 
@@ -39,7 +39,59 @@ is `application/json;charset=utf-8`. The body of the POST request is :
 {
   "content": "<html>whatever a valid html document source</html>",
   "type": "pdf",
-  "fileName": "_sbd23s"
+  "fileName": "_sbd23s",
+  "resolveTime": "200"
 }
 ```
-Also notice that the `type` and `fileName` is optional, though they may have an influence on the performance.
+Also notice that the `type`, `fileName` and `resolveTime` is optional, `type` have three possible types: pdf/jpeg/png;
+`resolveTime` has a default time of 200 (notice that this is the **suggestion** time, other than ajax dynamic generation of html page, 
+ you should not configure this parameter).
+
+## Integrate with existed application
+  
+  Refer the dsone-fileserver-client for reference. It contains a small use case for integrating.
+
+- import dsone-fileserver-config module in your main pom.xml
+```xml
+    <dependency>
+        <groupId>com.derbysoft.dhp</groupId>
+        <artifactId>dsone-fileserver-config</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+    </dependency>
+```
+
+- enable pdf-converter annotation
+```java
+    @Configuration
+    @EnablePdfConverter
+    public class PdfConverterClientConfig {
+    
+    }  
+```
+- make the actual conversion request to remote conversion service
+```java
+    @Controller
+    public class HomeController {
+    
+        @Autowired
+        private HttpClientAdapter httpClientAdapter;
+        
+        // generate a pdf file based on the html
+        @RequestMapping(value = "/output-report", method = RequestMethod.GET)
+        public void outputReport(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            // get the actual generated html source file 
+            String content = "<html>whatever a valid html document source</html>";
+            List<NameValuePair> reqParams = new ArrayList<>();
+            reqParams.add(new BasicNameValuePair("fileName", String.valueOf(System.currentTimeMillis())));
+            reqParams.add(new BasicNameValuePair("content", content));
+    
+            httpClientAdapter.handlePostRequest(remoteEnvArgs.getPdfTransformerAddr(), reqParams, new AbstractResponseHandler<Object>() {
+                @Override
+                public Object handleEntity(HttpEntity entity) throws IOException {
+                    entity.writeTo(resp.getOutputStream());
+                    return null;
+                }
+            });
+        }
+    }
+```

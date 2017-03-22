@@ -288,12 +288,14 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
     public static class FileConverterKey {
         private String url;
         private String fileType;
+        private int resolveTime = 200;
 
         public FileConverterKey() {}
 
-        public FileConverterKey(String url, String fileType) {
+        public FileConverterKey(String url, String fileType, int resolveTime) {
             this.url = url;
             this.fileType = fileType;
+            withResolveTime(resolveTime);
         }
 
         public FileConverterKey withUrl(String url) {
@@ -306,12 +308,26 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             return this;
         }
 
+        public FileConverterKey withResolveTime(int resolveTime) {
+            if (resolveTime < 100 || resolveTime > 5000) {
+                logger.debug("invalid resovleTime, the max resolve time is 5000, min resolve time is 100");
+                return this;
+            }
+
+            this.resolveTime = resolveTime;
+            return this;
+        }
+
         public String getUrl() {
             return url;
         }
 
         public String getFileType() {
             return fileType;
+        }
+
+        public int getResolveTime() {
+            return resolveTime;
         }
 
         @Override
@@ -321,14 +337,14 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
 
             FileConverterKey that = (FileConverterKey) o;
 
-            if (url != null ? !url.equals(that.url) : that.url != null) return false;
-            return fileType != null ? fileType.equals(that.fileType) : that.fileType == null;
+            return resolveTime == that.resolveTime && (url != null ? url.equals(that.url) : that.url == null) && (fileType != null ? fileType.equals(that.fileType) : that.fileType == null);
         }
 
         @Override
         public int hashCode() {
             int result = url != null ? url.hashCode() : 0;
             result = 31 * result + (fileType != null ? fileType.hashCode() : 0);
+            result = 31 * result + resolveTime;
             return result;
         }
 
@@ -337,6 +353,7 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             return "FileConverterKey{" +
                     "url='" + url + '\'' +
                     ", fileType='" + fileType + '\'' +
+                    ", resolveTime=" + resolveTime +
                     '}';
         }
     }
@@ -346,6 +363,7 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
         private String fileName;
         private String outputSize;
         private String zoom = "1";
+        private int resolveTime = 200;
 
         public ConverterConfig() {
         }
@@ -354,6 +372,13 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             this.url = url;
             this.fileName = fileName;
             this.outputSize = PhantomjsClient.outputSize;
+        }
+
+        public ConverterConfig(String url, String fileName, int resolveTime) {
+            this.url = url;
+            this.fileName = fileName;
+            this.outputSize = PhantomjsClient.outputSize;
+            setResolveTime(resolveTime);
         }
 
         public ConverterConfig(String url, String fileName, String outputSize) {
@@ -399,6 +424,19 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
 
         public void setZoom(String zoom) {
             this.zoom = zoom;
+        }
+
+        public int getResolveTime() {
+            return resolveTime;
+        }
+
+        public void setResolveTime(int resolveTime) {
+            if (resolveTime < 100 || resolveTime > 5000) {
+                logger.debug("invalid resovleTime, the max resolve time is 5000, min resolve time is 100");
+                return;
+            }
+
+            this.resolveTime = resolveTime;
         }
     }
 }

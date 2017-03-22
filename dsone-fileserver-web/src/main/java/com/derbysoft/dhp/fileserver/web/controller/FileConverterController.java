@@ -55,6 +55,7 @@ public class FileConverterController {
     public void convertUrlToHtml(HttpServletRequest request, HttpServletResponse response,
                                  @ApiParam(value = "the type of generated file that you need, default is pdf", allowableValues = "pdf, png, jpeg")  @PathVariable("fileType") String fileType,
                                  @ApiParam(value = "the filename of the generated file, default is '_default'")  @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
+                                 @ApiParam(value = "the default on-load resolve time for the conversion of html file to target file type, default time is 200, max is 5000, min is 100")  @RequestParam(value = "resolveTime", required = false, defaultValue = "200") int resolveTime,
                                  @ApiParam(value = "the valid http url address", required = true) @RequestParam("url") String url
 //                               , @ApiParam(value = "the output size of the pdf or image", required = false, defaultValue = "1368px*1024px") @RequestParam(value = "outputSize", required = false, defaultValue = "1368px*1024px") String outputSize
                                  ) throws IOException, InterruptedException, TimeoutException, ExecutionException {
@@ -73,8 +74,8 @@ public class FileConverterController {
         } else
             targetFileName = fileName + "." + fileExtension;
 
-        ConverterConfig config = new ConverterConfig(url, targetFileName);
-        FileConverterKey key = new FileConverterKey(url, fileExtension);
+        ConverterConfig config = new ConverterConfig(url, targetFileName, resolveTime);
+        FileConverterKey key = new FileConverterKey(url, fileExtension, resolveTime);
 
         ResponseEntity<PhantomjsResponse>  entity = serviceExecutor.execute(config, key);
 
