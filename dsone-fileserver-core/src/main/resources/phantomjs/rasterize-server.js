@@ -41,8 +41,7 @@ if (system.args.length !== 2) {
         if (params.fileName.substr(-4) === ".pdf") {
             size = params.outputSize.split('*');
             page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '1cm', border: '1cm' }
-                : { format: params.outputSize, orientation: 'portait', margin: '1cm' };
-
+                : { format: params.outputSize, orientation: 'landscape', margin: '1cm' };
         } else if (params.outputSize.substr(-2) === "px") {
             // if the output file type is jpeg or png, just ignore the output size setting, show the whole image
 

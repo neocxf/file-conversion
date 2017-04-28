@@ -1,4 +1,3 @@
-1. jms extension for controlling of service queue size
-2. websocket integration (server side)
-3. sockjs integration (client)
-4. prepare for this [project](https://github.com/baghelamit/iot-traffic-monitor)
+1. cache with time expiration [cache-upgrade](http://stackoverflow.com/questions/2070407/implementing-a-cache-using-a-java-concurrenthashmap) using [guava](https://github.com/google/guava)
+2. cache with [expiringmap](https://github.com/jhalterman/expiringmap)
+3. [akka](https://github.com/akka/akka) project concurrent practice.

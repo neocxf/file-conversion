@@ -2,7 +2,6 @@ package com.derbysoft.dhp.fileserver.core.server;
 
 import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
 import com.derbysoft.dhp.fileserver.api.support.Computable;
-import com.derbysoft.dhp.fileserver.api.util.OutputSize;
 import com.derbysoft.dhp.fileserver.core.exception.PhantomRenderException;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.PhantomjsResponse;
@@ -290,7 +289,6 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
         private String url;
         private String fileType;
         private int resolveTime = 200;
-        private String outputSize = "A4";
 
         public FileConverterKey() {}
 
@@ -298,11 +296,6 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             this.url = url;
             this.fileType = fileType;
             withResolveTime(resolveTime);
-        }
-
-        public FileConverterKey(String url, String fileExtension, int resolveTime, String outputSize) {
-            this(url, fileExtension, resolveTime);
-            withOutputSize(outputSize);
         }
 
         public FileConverterKey withUrl(String url) {
@@ -317,20 +310,11 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
 
         public FileConverterKey withResolveTime(int resolveTime) {
             if (resolveTime < 100 || resolveTime > 5000) {
-                logger.error("invalid resovleTime, the max resolve time is 5000, min resolve time is 100");
+                logger.debug("invalid resovleTime, the max resolve time is 5000, min resolve time is 100");
                 return this;
             }
 
             this.resolveTime = resolveTime;
-            return this;
-        }
-
-        public FileConverterKey withOutputSize(String outputSize) {
-            if (!OutputSize.assertValid(outputSize)) {
-                logger.error("invalid outputSize");
-            }
-
-            this.outputSize = outputSize;
             return this;
         }
 
@@ -346,10 +330,6 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             return resolveTime;
         }
 
-        public String getOutputSize() {
-            return this.outputSize;
-        }
-
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -357,18 +337,14 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
 
             FileConverterKey that = (FileConverterKey) o;
 
-            if (resolveTime != that.resolveTime) return false;
-            if (!url.equals(that.url)) return false;
-            if (!fileType.equals(that.fileType)) return false;
-            return outputSize.equals(that.outputSize);
+            return resolveTime == that.resolveTime && (url != null ? url.equals(that.url) : that.url == null) && (fileType != null ? fileType.equals(that.fileType) : that.fileType == null);
         }
 
         @Override
         public int hashCode() {
-            int result = url.hashCode();
-            result = 31 * result + fileType.hashCode();
+            int result = url != null ? url.hashCode() : 0;
+            result = 31 * result + (fileType != null ? fileType.hashCode() : 0);
             result = 31 * result + resolveTime;
-            result = 31 * result + outputSize.hashCode();
             return result;
         }
 
@@ -378,7 +354,6 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
                     "url='" + url + '\'' +
                     ", fileType='" + fileType + '\'' +
                     ", resolveTime=" + resolveTime +
-                    ", outputSize='" + outputSize + '\'' +
                     '}';
         }
     }
@@ -417,11 +392,6 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             this.fileName = fileName;
             this.outputSize = outputSize;
             this.zoom = zoom;
-        }
-
-        public ConverterConfig(String url, String targetFileName, int resolveTime, String outputSize) {
-            this(url, targetFileName, resolveTime);
-            this.outputSize = outputSize;
         }
 
         public String getUrl() {
