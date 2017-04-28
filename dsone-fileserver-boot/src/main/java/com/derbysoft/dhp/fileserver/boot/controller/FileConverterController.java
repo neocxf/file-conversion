@@ -1,8 +1,8 @@
 package com.derbysoft.dhp.fileserver.boot.controller;
 
 import com.derbysoft.dhp.fileserver.api.FileServerGatewayConstants;
-import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
 import com.derbysoft.dhp.fileserver.api.support.ObjectFactory;
+import com.derbysoft.dhp.fileserver.api.util.OutputSize;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -59,6 +57,7 @@ public class FileConverterController {
                                  @ApiParam(value = "the type of generated file that you need, default is pdf", allowableValues = "pdf, png, jpeg")  @PathVariable("fileType") String fileType,
                                  @ApiParam(value = "the filename of the generated file, default is '_default'")  @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
                                  @ApiParam(value = "the default on-load resolve time for the conversion of html file to target file type, default time is 200, max is 5000, min is 100")  @RequestParam(value = "resolveTime", required = false, defaultValue = "200") int resolveTime,
+                                 @ApiParam(value = "the converter output size")  @RequestParam(value = "outputSize", required = false, defaultValue = "A4") OutputSize size,
                                  @ApiParam(value = "the valid http url address", required = true) @RequestParam("url") String url) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String targetFileName = "";
 
@@ -75,8 +74,10 @@ public class FileConverterController {
         } else
             targetFileName = fileName + "." + fileExtension;
 
-        ConverterConfig config = new ConverterConfig(url, targetFileName, resolveTime);
-        FileConverterKey key = new FileConverterKey(url, fileExtension, resolveTime);
+        String outputSize = OutputSize.val(size);
+
+        ConverterConfig config = new ConverterConfig(url, targetFileName, resolveTime, outputSize);
+        FileConverterKey key = new FileConverterKey(url, fileExtension, resolveTime, outputSize);
 
         ResponseEntity<PhantomjsResponse>  entity = serviceExecutor.execute(config, key);
 

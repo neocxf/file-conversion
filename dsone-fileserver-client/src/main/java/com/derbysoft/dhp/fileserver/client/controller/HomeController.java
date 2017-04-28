@@ -2,6 +2,7 @@ package com.derbysoft.dhp.fileserver.client.controller;
 
 import com.derbysoft.dhp.fileserver.api.filter.ServletStringWrapper;
 import com.derbysoft.dhp.fileserver.api.http.HttpClientAdapter;
+import com.derbysoft.dhp.fileserver.api.util.OutputSize;
 import com.derbysoft.dhp.fileserver.client.config.RemoteEnvArgs;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -51,6 +52,8 @@ public class HomeController {
         List<NameValuePair> reqParams = new ArrayList<>();
         reqParams.add(new BasicNameValuePair("fileName", String.valueOf(System.currentTimeMillis())));
         reqParams.add(new BasicNameValuePair("content", content));
+        reqParams.add(new BasicNameValuePair("resolveTime", "200"));
+        reqParams.add(new BasicNameValuePair("outputSize", OutputSize.A4.val()));
 
         httpClientAdapter.handlePostRequest(remoteEnvArgs.getPdfTransformerAddr(), reqParams, new AbstractResponseHandler<Object>() {
             @Override
