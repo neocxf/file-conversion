@@ -17,6 +17,10 @@ public enum OutputSize {
     PX_1368_1024("1368px*1024px");
 
     private String val;
+
+    /**
+     *  at Phantomjs 2.1.1 version, A4, A5 need to be zoom
+     */
     private float zoomFactor = 1.0f;
 
     OutputSize(String val) {

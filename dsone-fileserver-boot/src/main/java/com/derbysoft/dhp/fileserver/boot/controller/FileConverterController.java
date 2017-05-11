@@ -3,6 +3,7 @@ package com.derbysoft.dhp.fileserver.boot.controller;
 import com.derbysoft.dhp.fileserver.api.FileServerGatewayConstants;
 import com.derbysoft.dhp.fileserver.api.exception.ComputeFailedException;
 import com.derbysoft.dhp.fileserver.api.support.ObjectFactory;
+import com.derbysoft.dhp.fileserver.api.util.OutputSize;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.ConverterConfig;
 import com.derbysoft.dhp.fileserver.core.server.PhantomjsClient.FileConverterKey;
