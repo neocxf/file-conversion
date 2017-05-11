@@ -1,5 +1,5 @@
 "use strict";
-var port, server, service, resolveTime,
+var port, server, service,
     address, output, size, pageWidth, pageHeight,
     system = require('system'),
     page = require('webpage').create();
@@ -7,6 +7,10 @@ var port, server, service, resolveTime,
 page.onResourceError = function(resourceError) {
     page.reason = resourceError.errorString;
     page.reason_url = resourceError.url;
+};
+
+page.onConsoleMessage = function (msg) { // enable the sandbox console
+    console.log(msg);
 };
 
 // rather than provide the rough 5000 millseconds, we can use some else like monitoring specific .class attribute change
@@ -21,7 +25,7 @@ page.onResourceTimeout = function(e) {
 };
 
 if (system.args.length !== 2) {
-    console.log('Usage: simpleserver.js <portnumber>');
+    console.log('Usage: phantomjs rasterize-server.js <portnumber>');
     phantom.exit(1);
 } else {
     port = system.args[1];
@@ -36,12 +40,13 @@ if (system.args.length !== 2) {
 
         address = params.url;
         output = params.fileName;
-        resolveTime = params.resolveTime;
+
         page.viewportSize = { width: 1024, height: 768 };
+
         if (params.fileName.substr(-4) === ".pdf") {
             size = params.outputSize.split('*');
             page.paperSize = size.length === 2 ? { width: size[0], height: size[1], margin: '1cm', border: '1cm' }
-                : { format: params.outputSize, orientation: 'portait', margin: '1cm' };
+                : { format: params.outputSize, orientation: 'portrait', margin: '1cm' };
 
         } else if (params.outputSize.substr(-2) === "px") {
             // if the output file type is jpeg or png, just ignore the output size setting, show the whole image
@@ -61,11 +66,15 @@ if (system.args.length !== 2) {
             // }
         }
 
-        page.zoomFactor = params.zoom;
+        page.zoomFactor = params.zoomFactor;
 
         // the original impl
         page.open(address, function (status) {
             console.log('Phantomjs server return status: {} ' + status);
+
+            page.evaluate(function (zoom) {
+                document.querySelector('body').style.zoom = zoom;
+            }, page.zoomFactor);
 
             response.headers = {
                 'Cache': 'no-cache',
@@ -122,7 +131,7 @@ if (system.args.length !== 2) {
                         response.close();
                     }
 
-                }, resolveTime);
+                }, params.resolveTime);
             }
         });
 

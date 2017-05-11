@@ -58,6 +58,7 @@ public class FileConverterController {
                                  @ApiParam(value = "the filename of the generated file, default is '_default'")  @RequestParam(value = "fileName", required = false, defaultValue = "_default") String fileName,
                                  @ApiParam(value = "the default on-load resolve time for the conversion of html file to target file type, default time is 200, max is 5000, min is 100")  @RequestParam(value = "resolveTime", required = false, defaultValue = "200") int resolveTime,
                                  @ApiParam(value = "the converter output size")  @RequestParam(value = "outputSize", required = false, defaultValue = "A4") OutputSize size,
+                                 @ApiParam(value = "the zoomFactor for the conversion, the remote client should not set this, behind the scene, the parameter has already been set. Right now, only for demo purpose")  @RequestParam(value = "zoomFactor", required = false, defaultValue = "-1") float _zoomFactor,
                                  @ApiParam(value = "the valid http url address", required = true) @RequestParam("url") String url) throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String targetFileName = "";
 
@@ -75,8 +76,12 @@ public class FileConverterController {
             targetFileName = fileName + "." + fileExtension;
 
         String outputSize = OutputSize.val(size);
+        float zoomFactor = OutputSize.zoomFactor(size);
 
-        ConverterConfig config = new ConverterConfig(url, targetFileName, resolveTime, outputSize);
+        if (_zoomFactor > 0)
+            zoomFactor = _zoomFactor;
+
+        ConverterConfig config = new ConverterConfig(url, targetFileName, resolveTime, outputSize, zoomFactor);
         FileConverterKey key = new FileConverterKey(url, fileExtension, resolveTime, outputSize);
 
         ResponseEntity<PhantomjsResponse>  entity = serviceExecutor.execute(config, key);

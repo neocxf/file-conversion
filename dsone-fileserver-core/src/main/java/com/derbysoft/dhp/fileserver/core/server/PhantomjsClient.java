@@ -387,10 +387,12 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
         private String url;
         private String fileName;
         private String outputSize;
-        private String zoom = "1";
+        private float zoomFactor = 1;
         private int resolveTime = 200;
 
-        public ConverterConfig() {
+        public ConverterConfig(String url, String targetFileName, int resolveTime, String outputSize, float zoomFactor) {
+            this(url, targetFileName, resolveTime, outputSize);
+            setZoomFactor(zoomFactor);
         }
 
         public ConverterConfig(String url, String fileName) {
@@ -412,11 +414,11 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             this.outputSize = outputSize;
         }
 
-        public ConverterConfig(String url, String fileName, String outputSize, String zoom) {
+        public ConverterConfig(String url, String fileName, String outputSize, float zoomFactor) {
             this.url = url;
             this.fileName = fileName;
             this.outputSize = outputSize;
-            this.zoom = zoom;
+            this.zoomFactor = zoomFactor;
         }
 
         public ConverterConfig(String url, String targetFileName, int resolveTime, String outputSize) {
@@ -448,12 +450,12 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             this.outputSize = outputSize;
         }
 
-        public String getZoom() {
-            return zoom;
+        public float getZoomFactor() {
+            return zoomFactor;
         }
 
-        public void setZoom(String zoom) {
-            this.zoom = zoom;
+        public void setZoomFactor(float zoomFactor) {
+            this.zoomFactor = zoomFactor;
         }
 
         public int getResolveTime() {
