@@ -95,3 +95,40 @@ Also notice that the `type`, `fileName` and `resolveTime` is optional, `type` ha
         }
     }
 ```
+
+## Debug help
+
+  Backendly, all the transformation requests are proxied to the embeded Phantomjs server. So you can use several commands to test the transformation
+
+### Parameters meaning
+* url
+
+html's absolute path
+
+* fileName
+
+pdf, jpg or png's name
+
+* outputSize
+
+transform file's size. Available size is : A4, A3, A5, 1920px*1024px, 1024px*768px, 1366px*768px, 1368px*1024px
+
+* resolveTime
+
+phantomjs's max resolve time. Currently used for Ajax request page rendering
+
+* zoom
+
+zoom factor, which is taken from phantomjs's website. Currently not employeed
+
+### How to debug
+- start the phantomjs server
+```bash
+    phantomjs rasterize-server.js 8080   
+```
+
+- test the transformation
+```bash
+    curl -X POST -H "Content-Type: application/json" -d '{"url":"./_report_20170510.html","fileName":"a.pdf","outputSize":"A4","zoom":"1","resolveTime":200}' localhost:8080
+```
+   Notice that, you should provide the absolute transforming path of html file as the ***url*** parameter

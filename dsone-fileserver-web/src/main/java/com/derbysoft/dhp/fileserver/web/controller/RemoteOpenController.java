@@ -51,14 +51,16 @@ public class RemoteOpenController {
     @ApiOperation(value = " local test for the pdf converter interface, <br/> note that the file should be html format and lies in the exact server of this interface ")
     @RequestMapping(value = FileServerGatewayConstants.REMOTE_CONVERTER_ENTRANCE_LOCAL, method = RequestMethod.POST)
     public void handleTheTransformationWithLocalFile(@ApiParam(value = "the html file that gonna transform", required = true) @RequestParam(value="file") MultipartFile file,
-                                        @ApiParam(value = "the type of generated file that you need, default is pdf", allowableValues = "pdf, png, jpeg")   @RequestParam(value = "type", required = false, defaultValue = "pdf") String extension,
-                                        @ApiParam(value = "the filename of the generated file, default is '_default'")    @RequestParam(value = "fileName", required = false, defaultValue = "_default") String rawFileName,
-                                        HttpServletRequest req,
-                                        HttpServletResponse resp
+                                                     @ApiParam(value = "the type of generated file that you need, default is pdf", allowableValues = "pdf, png, jpeg")   @RequestParam(value = "type", required = false, defaultValue = "pdf") String extension,
+                                                     @ApiParam(value = "the filename of the generated file, default is '_default'")    @RequestParam(value = "fileName", required = false, defaultValue = "_default") String rawFileName,
+                                                     @ApiParam(value = "the default on-load resolve time for the conversion of html file to target file type, default time is 200, max is 5000, min is 100")  @RequestParam(value = "resolveTime", required = false, defaultValue = "200") int resolveTime,
+                                                     @ApiParam(value = "the converter output size")  @RequestParam(value = "outputSize", required = false, defaultValue = "A4") OutputSize size,
+                                                     HttpServletRequest req,
+                                                     HttpServletResponse resp
     ) throws IOException, ServletException {
         String fileName = (rawFileName.equals("_default") ? createPrefixDailyName("_report") : rawFileName) + ".html";
         String htmlUrl = FileUtilsWrapper.storeFile(file.getBytes(), fileName);
-        String requestUrl = FileServerGatewayConstants.CONVERTER_ENTRANCE + extension + "?url=" + htmlUrl;
+        String requestUrl = FileServerGatewayConstants.CONVERTER_ENTRANCE + extension + "?url=" + htmlUrl + "&resolveTime=" + resolveTime + "&outputSize=" + size;
         logger.trace(" going to forward the request to " + requestUrl);
         req.getRequestDispatcher(requestUrl).forward(req, resp);
     }
