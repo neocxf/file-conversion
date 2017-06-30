@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dsone-fileserver-parent</artifactId>
         <groupId>com.derbysoft.dhp</groupId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -44,7 +44,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>1.3.3.RELEASE</version>
+                <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -57,7 +57,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.3.3.RELEASE</version>
+                <version>${spring.boot.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -65,6 +65,44 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!--<plugin>-->
+                <!--<groupId>io.fabric8</groupId>-->
+                <!--<artifactId>docker-maven-plugin</artifactId>-->
+                <!--<version>0.21.0</version>-->
+                <!--<configuration>-->
+                    <!--&lt;!&ndash;<dockerHost>http://127.0.0.1:2375</dockerHost>&ndash;&gt;-->
+                    <!--<verbose>true</verbose>-->
+                    <!--<images>-->
+                        <!--<image>-->
+                            <!--<name>neocxf/phantom-conversion</name>-->
+                            <!--<build>-->
+                                <!--<dockerFile>Dockerfile</dockerFile>-->
+                                <!--<assembly>-->
+                                    <!--<descriptorRef>artifact</descriptorRef>-->
+                                <!--</assembly>-->
+                            <!--</build>-->
+                        <!--</image>-->
+                    <!--</images>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.11</version>
+                <configuration>
+                    <imageName>${docker.user}/${docker.image.name}:${docker.image.tag}</imageName>
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
             </plugin>
         </plugins>
     </build>

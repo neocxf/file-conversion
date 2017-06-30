@@ -144,6 +144,7 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
             logger.info("Phantomjs Client serve at port{} " + port  + " give the response: " + connection.getResponseMessage() + ", " + connection.getResponseCode());
             in.close();
         } catch (SocketTimeoutException ste) {
+            logger.error("Phantomjs Client serve at port{} " + port  + " failed to render the page " + converterKey.getUrl() + ", give the response: {} readTimeout");
             throw new SocketTimeoutException(ste.getMessage());
         } catch (IOException e) {
             // here we throw the customized exception in case of 404 response, note that the throw here may be not intercepted by the ExceptionHandler

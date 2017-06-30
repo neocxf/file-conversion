@@ -56,7 +56,7 @@ Also notice that the `type`, `fileName` and `resolveTime` is optional, `type` ha
     <dependency>
         <groupId>com.derbysoft.dhp</groupId>
         <artifactId>dsone-fileserver-config</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.0</version>
     </dependency>
 ```
 
@@ -129,6 +129,6 @@ zoom factor, which is taken from phantomjs's website. Currently not employeed
 
 - test the transformation
 ```bash
-    curl -X POST -H "Content-Type: application/json" -d '{"url":"./_report_20170510.html","fileName":"a.pdf","outputSize":"A4","zoom":"1","resolveTime":200}' localhost:8080
+    curl -X POST -H "Content-Type: application/json" -d '{"url":"./_report_20170510.html","fileName":"a.pdf","outputSize":"A4","zoomFactor":"0.52","resolveTime":200}' localhost:8080
 ```
    Notice that, you should provide the absolute transforming path of html file as the ***url*** parameter

@@ -6,7 +6,7 @@
 
     <groupId>com.derbysoft.dhp</groupId>
     <artifactId>dsone-fileserver-parent</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <modules>
         <module>dsone-fileserver-core</module>
         <module>dsone-fileserver-web</module>
@@ -27,10 +27,15 @@
         <!-- Common libs -->
         <commons.io.version>2.5</commons.io.version>
         <spring.bom.version>4.2.5.RELEASE</spring.bom.version>
+        <spring.boot.version>1.3.5.RELEASE</spring.boot.version>
         <commons.lang3.version>3.4</commons.lang3.version>
         <gson.version>2.7</gson.version>
         <jackson.databind.version>2.6.5</jackson.databind.version>
         <urlrewritefilter.version>4.0.4</urlrewritefilter.version>
+
+        <docker.user>dsone</docker.user>
+        <docker.image.name>phantom-conversion</docker.image.name>
+        <docker.image.tag>${project.version}</docker.image.tag>
     </properties>
 
     <dependencies>
@@ -137,45 +142,45 @@
             <id>tomcatServer</id>
             <url>http://localhost:8080/manager/text</url>
         </repository>-->
-        <repository>
-            <id>dhp</id>
-            <name>dhp-release</name>
-            <url>http://10.200.107.56:8081/artifactory/libs-release-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>dhp</id>
-            <name>dhp-snapshot</name>
-            <url>http://10.200.107.56:8081/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
+        <!--<repository>-->
+            <!--<id>dhp</id>-->
+            <!--<name>dhp-release</name>-->
+            <!--<url>http://10.200.107.56:8081/artifactory/libs-release-local</url>-->
+        <!--</repository>-->
+        <!--<snapshotRepository>-->
+            <!--<id>dhp</id>-->
+            <!--<name>dhp-snapshot</name>-->
+            <!--<url>http://10.200.107.56:8081/artifactory/libs-snapshot-local</url>-->
+        <!--</snapshotRepository>-->
     </distributionManagement>
 
     <repositories>
 
-        <repository>
-            <id>dh-repo</id>
-            <url>http://10.200.107.56:8081/artifactory/repo</url>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>Maven2</id>
-            <name>Maven2-releases</name>
-            <url>http://maven.derbysoft.tm/artifactory/libs-release-local</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+        <!--<repository>-->
+            <!--<id>dh-repo</id>-->
+            <!--<url>http://10.200.107.56:8081/artifactory/repo</url>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+                <!--<updatePolicy>daily</updatePolicy>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>Maven2</id>-->
+            <!--<name>Maven2-releases</name>-->
+            <!--<url>http://maven.derbysoft.tm/artifactory/libs-release-local</url>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
 
-        <repository>
-            <id>derbysoft</id>
-            <name>Maven2-releases</name>
-            <url>http://10.200.107.43/artifactory/libs-release-local</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+        <!--<repository>-->
+            <!--<id>derbysoft</id>-->
+            <!--<name>Maven2-releases</name>-->
+            <!--<url>http://10.200.107.43/artifactory/libs-release-local</url>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
 
         <repository>
             <id>io.spring.repo.maven.release</id>
