@@ -34,7 +34,7 @@ public class PhantomjsObjectFactory implements ObjectFactory<PhantomjsClient> {
     private int connectTimeout;
     @Value("${phantomjs.readtimeout}")
     private int readTimeout;
-    @Value("${phantomjs.outputsize}")
+    @Value("${phantomjs.outputsize:A4}")
     private String size;
 
     @Autowired

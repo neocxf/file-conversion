@@ -113,7 +113,7 @@ public class PhantomjsClient implements Computable<String, FileConverterKey, Res
         try {
             URL url = new URL("http://" + host + ":"
                     + port + "/");
-            logger.debug("params: " + params + ", converterKey: " + converterKey);
+            logger.info("params: " + params + ", converterKey: " + converterKey);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
             connection.setConnectTimeout(connectTimeout);

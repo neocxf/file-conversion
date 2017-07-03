@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,24 +19,22 @@ import java.util.concurrent.LinkedBlockingDeque;
  * @author neo.fei {neocxf@gmail.com}
  */
 @Component("serviceQueue")
+@PropertySource({"classpath:phantomjs.properties"})
 public class PhantomjsServiceQueue<T> implements ServiceQueue<T>, InitializingBean, DisposableBean{
     private static final Logger logger = LoggerFactory.getLogger(PhantomjsServiceQueue.class);
 
-    private static final int DEFAULT_QUEUE_SIZE = 3;
-    private final BlockingQueue<T> queue ;
-    private final int size;
+    private BlockingQueue<T> queue ;
+
+    /**
+     *  the default pool size is 3,
+     *  you can alter the size by passing through environment variable or setting from phantomjs.properties
+     *  the environment variable will take first place, then the phantomjs.properties
+     */
+    @Value("${phantomjs.pool.size:3}")
+    private int size;
 
     @Autowired
     ObjectFactory<T> objectFactory;
-
-    public PhantomjsServiceQueue() throws IOException, InterruptedException {
-        this(DEFAULT_QUEUE_SIZE);
-    }
-
-    public PhantomjsServiceQueue(int size) throws IOException, InterruptedException {
-        this.queue = new LinkedBlockingDeque<T>(size);
-        this.size = size;
-    }
 
     /**
      *  blocking to borrow the service
@@ -62,14 +62,15 @@ public class PhantomjsServiceQueue<T> implements ServiceQueue<T>, InitializingBe
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        logger.debug(" ServiceQueue initializing the instance queue ... ");
+        logger.debug(" ServiceQueue initializing the instance queue with size [" + size + "] ...");
+        this.queue = new LinkedBlockingDeque<T>(size);
         initialize();
     }
 
 
     @Override
     public void destroy() throws Exception {
-        logger.debug(" ServiceQueue destroying the instance queue ... ");
+        logger.debug(" ServiceQueue destroying the instance queue with size [" + size + "] ...");
 
         for (T elem : queue) {
             objectFactory.destroy(elem);

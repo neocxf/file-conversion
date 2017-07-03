@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<configuration scan="true" scanPeriod="3 seconds">-->
+<!-- Logback configuration. See http://logback.qos.ch/manual/index.html -->
+<configuration>
+    <!-- 使用 spring boot 自带的 logback 配置文件实现-->
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <!--<Target>System.out</Target>-->
+        <encoder>
+            <!--<pattern>[%p] %c{1}:%L - %m%n</pattern>-->
+            <pattern class="ch.qos.logback.classic.PatternLayout">
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n
+                <charset>utf-8</charset>
+            </pattern>
+        </encoder>
+
+    </appender>
+
+    <!-- 方法1： 如果log信息以特定的字符串开始，则打印该打印信息； 并且该信息必须为trace级别-->
+    <appender name="stringMatcher" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern class="ch.qos.logback.classic.PatternLayout">
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n
+                <charset>utf-8</charset>
+            </pattern>
+        </encoder>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    if(message.startsWith("Server:")) {
+                    return true;
+                    } else
+                    return false;
+                </expression>
+            </evaluator>
+
+            <OnMatch>NEUTRAL</OnMatch>  <!-- 如果使用 NEUTRAL，则意味着保持中立，后面的相关 filter 设置将将会起作用-->
+            <OnMismatch>DENY</OnMismatch>
+        </filter>
+
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>trace</level>
+            <OnMatch>ACCEPT</OnMatch>  <!-- 如果使用 ACCEPT，则意味着直接接收，后面的相关 filter 设置将一点不起作用-->
+            <OnMismatch>DENY</OnMismatch>
+        </filter>
+    </appender>
+
+    <!-- 方法2： 如果log信息以特定的字符串开始，则打印该打印信息； 并且该信息必须为trace级别-->
+    <appender name="stringMatcher2" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern class="ch.qos.logback.classic.PatternLayout">
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n
+                <charset>utf-8</charset>
+            </pattern>
+        </encoder>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
+                <expression>
+                    return event.getLevel().equals(Level.TRACE) &amp;&amp;
+                    event.getMessage().startsWith("Server:");
+                </expression>
+            </evaluator>
+            <OnMatch>NEUTRAL</OnMatch>
+            <OnMismatch>DENY</OnMismatch>
+        </filter>
+
+    </appender>
+
+    <!-- 过滤所有以 statement [13579] 的数据-->
+    <appender name="stringMatcher3" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern class="ch.qos.logback.classic.PatternLayout">
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n
+                <charset>utf-8</charset>
+            </pattern>
+        </encoder>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <matcher>
+                    <Name>odd</Name>
+                    <regex>statement [13579]</regex>
+                </matcher>
+                <expression>odd.matches(formattedMessage)</expression>
+            </evaluator>
+
+            <OnMatch>NEUTRAL</OnMatch>  <!-- 如果使用 NEUTRAL，则意味着保持中立，后面的相关 filter 设置将将会起作用-->
+            <OnMismatch>DENY</OnMismatch>
+        </filter>
+
+    </appender>
+
+
+    <!-- 该 appender 只记录 info 信息-->
+    <!--<appender name="file" class="ch.qos.logback.core.FileAppender">-->
+    <!--<file>tms.log</file>-->
+    <!--<encoder>-->
+    <!--<pattern>-->
+    <!--%d{yyy-MM-dd HH-mm:ss:SSS} [%thread] %-5level %logger{36} - %msg%n-->
+    <!--</pattern>-->
+    <!--<charset>utf-8</charset>-->
+    <!--</encoder>-->
+    <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+    <!--<level>info</level>-->
+    <!--<OnMatch>NEUTRAL</OnMatch>-->
+    <!--<OnMismatch>DENY</OnMismatch>-->
+    <!--</filter>-->
+    <!--</appender>-->
+
+    <!-- 按天生成日志文件-->
+    <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- rollover daily 配置日志所生成的目录以及生成文件名的规则-->
+        <encoder>
+            <pattern>
+                %d{yyy-MM-dd HH-mm:ss:SSS} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!-- only log level warn and above-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/phantom-conversion-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 64 Mb-->
+                <maxFileSize>64 Mb</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!-- setting the root level of logging to INFO-->
+    <root level="info">
+        <!--<appender-ref ref="stdout" />-->
+        <!--<appender-ref ref="stringMatcher" />-->
+        <!--<appender-ref ref="rollingFile" />-->
+
+    </root>
+
+    <!-- 设置自定义class产生的日志信息-->
+    <logger name="com.derbysoft.dhp.fileserver" level="debug">
+        <appender-ref ref="stringMatcher2"/>
+        <appender-ref ref="rollingFile" />
+    </logger>
+
+    <!-- 过滤第三方jar包产生的日志信息-->
+    <logger name="org" level="error" />
+    <!--<logger name="org.springframework.boot" level="info" />-->
+    <!--<logger name="java.sql" level="debug" />-->
+</configuration>
