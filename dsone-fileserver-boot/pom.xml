@@ -67,34 +67,13 @@
                 </executions>
             </plugin>
 
-            <!--<plugin>-->
-                <!--<groupId>io.fabric8</groupId>-->
-                <!--<artifactId>docker-maven-plugin</artifactId>-->
-                <!--<version>0.21.0</version>-->
-                <!--<configuration>-->
-                    <!--&lt;!&ndash;<dockerHost>http://127.0.0.1:2375</dockerHost>&ndash;&gt;-->
-                    <!--<verbose>true</verbose>-->
-                    <!--<images>-->
-                        <!--<image>-->
-                            <!--<name>neocxf/phantom-conversion</name>-->
-                            <!--<build>-->
-                                <!--<dockerFile>Dockerfile</dockerFile>-->
-                                <!--<assembly>-->
-                                    <!--<descriptorRef>artifact</descriptorRef>-->
-                                <!--</assembly>-->
-                            <!--</build>-->
-                        <!--</image>-->
-                    <!--</images>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.11</version>
                 <configuration>
                     <imageName>${docker.user}/${docker.image.name}:${docker.image.tag}</imageName>
-                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
@@ -103,7 +82,38 @@
                         </resource>
                     </resources>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>tag-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <image>${docker.user}/${docker.image.name}:${docker.image.tag}</image>
+                            <newName>${aws.account.id}.dkr.ecr.${aws.region}.amazonaws.com/${docker.user}/${docker.image.name}:${docker.image.tag}</newName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>push-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>${aws.account.id}.dkr.ecr.${aws.region}.amazonaws.com/${docker.user}/${docker.image.name}:${docker.image.tag}</imageName>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
+
     </build>
 </project>

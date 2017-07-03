@@ -36,6 +36,8 @@
         <docker.user>dsone</docker.user>
         <docker.image.name>phantom-conversion</docker.image.name>
         <docker.image.tag>${project.version}</docker.image.tag>
+        <aws.account.id>391292943957</aws.account.id>
+        <aws.region>ap-southeast-1</aws.region>
     </properties>
 
     <dependencies>
