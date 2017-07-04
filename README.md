@@ -10,7 +10,7 @@ provide html-pdf, html-png, html-jpeg conversion service
 
 ## How to use
 
-There are two way to use this project. One way is build the project as an war file adn deploy to tomcat container. The second way is deploying in docker container.
+There are three ways to use this project. One way is to build the project as an war file and deploy to tomcat container. The second way is to deploy in docker container.
 
 ### [Traditional way (war deployed)](id:war)
    Make sure that the phantomjs package is installed, and `/usr/local/phantomjs --version` works
@@ -24,7 +24,7 @@ $ cp dsone-fileserver-web/target/dsone-fileserver-web-${project.version}.war ${t
 $ service tomcat restart
 ```    
 
-### [Docker way (jar deployed)](id:jar)
+### [Docker compose way (jar deployed)](id:compose)
 ```bash
 $ git clone https://git.derbysoft.tm/dhp/dsone-fileserver
 $ cd fileserver/docker
@@ -46,6 +46,27 @@ is `application/json;charset=utf-8`. The body of the POST request is :
 Also notice that the `type`, `fileName` and `resolveTime` is optional, `type` have three possible types: pdf/jpeg/png;
 `resolveTime` has a default time of 200 (notice that this is the **suggestion** time, other than ajax dynamic generation of html page, 
  you should not configure this parameter).
+
+### [Docker way](id:docker)
+```bash
+$ git clone https://git.derbysoft.tm/dhp/dsone-fileserver
+$ cd fileserver
+$ mvn clean package
+$ docker run -it --rm --env phantomjs.pool.size=10 -p 8080:8091 dsone/phantom-conversion:1.1.0
+```
+    
+   You can provide varies kinds of parameters through the `--env` parameter of `docker run` command to configure the Phantom server. For example:
+*   phantomjs.pool.size 
+    
+    the max num of phantom server instance to be create to serve the conversion requests
+    
+*   phantomjs.script
+    
+    the script file that are going to execute, currently, just the `rasterize-server.js`
+
+*   phantomjs.outputsize
+
+    the output size of conversion target. By default, it is `1368px*1024px`. The available output size is `A4`, `A5`, `1920px*1024px`, `1024px*768px`, `1366px*768px`, `1368px*1024px`
 
 ## Integrate with existed application
   
