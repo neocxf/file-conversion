@@ -11,27 +11,29 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
+ *  pool configuration of HttpClient, mainly for internal use
  *
- * @author neo.fei {neocxf@gmail.com}
+ * @author neo.fei {neocxf@gmail.com} on 2017/9/29.
  */
-public class HttpClientPool {
-    private static final Logger logger = Logger.getLogger(InnerLoggerSetting.HTTP_LOGGER_NAME);
+class HttpClientPool {
+    private static final Logger log = Logger.getLogger(InnerLoggerSetting.HTTP_LOGGER_NAME);
+
     // Single-element enum to implement Singleton.
-    private static enum Singleton {
+    private enum Singleton {
         // Just one of me so constructor will be called once.
-        Client;
+        Client(200, 20);
         // The thread-safe client.
         private final CloseableHttpClient threadSafeClient;
         // The pool monitor.
         private final IdleConnectionMonitorThread monitor;
 
         // The constructor creates it - thus late
-        Singleton() {
+        Singleton(int maxTotal, int maxRoute) {
             PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
             // Increase max total connection to 200
-            cm.setMaxTotal(200);
+            cm.setMaxTotal(maxTotal);
             // Increase default max connection per route to 20
-            cm.setDefaultMaxPerRoute(20);
+            cm.setDefaultMaxPerRoute(maxRoute);
             // Build the client.
             threadSafeClient = HttpClients.custom()
                     .setConnectionManager(cm)
@@ -49,6 +51,11 @@ public class HttpClientPool {
 
     }
 
+    /**
+     *  get singleton http client
+     *
+     * @return http client
+     */
     public static CloseableHttpClient getClient() {
         // The thread safe client is held by the singleton.
         return Singleton.Client.get();
@@ -97,12 +104,14 @@ public class HttpClientPool {
                     // Optionally, close connections that have been idle too long.
                     cm.closeIdleConnections(60, TimeUnit.SECONDS);
                     // Look at pool stats.
-                    logger.finer("Stats: {}" + cm.getTotalStats());
+                    log.finer("Stats: {}" + cm.getTotalStats());
                 }
                 // Acknowledge the stop request.
                 stopRequest.stopped();
             } catch (InterruptedException ex) {
                 // terminate
+            } finally {
+                log.warning("IdleConnectionMonitorThread terminated");
             }
         }
 
@@ -118,7 +127,7 @@ public class HttpClientPool {
             HttpClientUtils.closeQuietly(HttpClientPool.getClient());
             // Close the connection manager.
             cm.close();
-            logger.finer("Http Client pool shut down");
+            log.warning("Http Client pool shut down");
         }
 
     }
