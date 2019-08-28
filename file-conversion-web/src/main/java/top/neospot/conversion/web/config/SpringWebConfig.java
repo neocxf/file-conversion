@@ -19,7 +19,7 @@ import javax.servlet.annotation.MultipartConfig;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan({ "com.derbysoft.dhp.fileserver" })
+@ComponentScan({ "top.neospot.conversion" })
 //@MultipartConfig(maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 10)
 public class SpringWebConfig extends WebMvcConfigurerAdapter {
 

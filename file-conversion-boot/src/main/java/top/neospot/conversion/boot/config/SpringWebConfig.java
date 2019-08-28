@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import javax.servlet.MultipartConfigElement;
 
 @Configuration
-@ComponentScan({ "com.derbysoft.dhp.fileserver" })
+@ComponentScan({ "top.neospot.conversion" })
 public class SpringWebConfig extends WebMvcConfigurerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SpringWebConfig.class);
 
