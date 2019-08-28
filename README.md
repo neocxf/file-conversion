@@ -15,18 +15,18 @@ There are three ways to use this project. One way is to build the project as an 
 ### [Traditional way (war deployed)](id:war)
    Make sure that the phantomjs package is installed, and `/usr/local/phantomjs --version` works
 ```bash
-$ git clone https://git.derbysoft.tm/dhp/dsone-fileserver
+$ git clone https://github.com/neocxf/file-conversion
 $ cd fileserver
 $ mvn clean install
 // ${tomcat} means the actual installation location. ${project.version} means the version of the current build.
 // before you run, replace it with acutal information
-$ cp dsone-fileserver-web/target/dsone-fileserver-web-${project.version}.war ${tomcat}/webapps
+$ cp file-conversion-web/target/file-conversion-web-${project.version}.war ${tomcat}/webapps
 $ service tomcat restart
 ```    
 
 ### [Docker compose way (jar deployed)](id:compose)
 ```bash
-$ git clone https://git.derbysoft.tm/dhp/dsone-fileserver
+$ git clone https://https://github.com/neocxf/file-conversion
 $ cd fileserver/docker
 $ ./run.sh
 ```
@@ -49,7 +49,7 @@ Also notice that the `type`, `fileName` and `resolveTime` is optional, `type` ha
 
 ### [Docker way](id:docker)
 ```bash
-$ git clone https://git.derbysoft.tm/dhp/dsone-fileserver
+$ git clone https://github.com/neocxf/file-conversion
 $ cd fileserver
 $ mvn clean package
 $ docker run -it --rm --env phantomjs.pool.size=10 -p 8080:8091 dsone/phantom-conversion:1.1.0
@@ -70,13 +70,13 @@ $ docker run -it --rm --env phantomjs.pool.size=10 -p 8080:8091 dsone/phantom-co
 
 ## Integrate with existed application
   
-  Refer the dsone-fileserver-client for reference. It contains a small use case for integrating.
+  Refer the file-conversion-client for reference. It contains a small use case for integrating.
 
-- import dsone-fileserver-config module in your main pom.xml
+- import file-conversion-config module in your main pom.xml
 ```xml
     <dependency>
-        <groupId>com.derbysoft.dhp</groupId>
-        <artifactId>dsone-fileserver-config</artifactId>
+        <groupId>top.neospot.conversion</groupId>
+        <artifactId>file-conversion-config</artifactId>
         <version>1.1.0</version>
     </dependency>
 ```
