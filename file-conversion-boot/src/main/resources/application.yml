@@ -1,0 +1,17 @@
+
+logging:
+  level:
+    com.derbysoft.dhp.fileserver: debug
+server:
+  port: 8091
+  display-name: fileserver
+swagger:
+  name: Conversion service from web page to pic or pdf
+  desc: APi for pdf-converter
+  version: ${version}
+  termsOfServiceUrl: https://www.neospot.top/
+  basePackage: @groupId@
+  contact:
+    name: neo.chen
+    url: https://www.neospot.top/
+    email: neocxf@gmail.com

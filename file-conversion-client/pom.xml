@@ -4,44 +4,59 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <artifactId>file-conversion-client</artifactId>
     <groupId>top.neospot.conversion</groupId>
-    <artifactId>file-conversion-parent</artifactId>
     <version>1.1.0</version>
-    <modules>
-        <module>file-conversion-core</module>
-        <module>file-conversion-api</module>
-        <module>file-conversion-web</module>
-        <module>file-conversion-boot</module>
-        <module>file-conversion-config</module>
-    </modules>
 
-    <packaging>pom</packaging>
+    <packaging>war</packaging>
 
     <properties>
         <!-- env setting-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <server.port>8016</server.port>
+        <server.port>8092</server.port>
         <deploy.addr>http://localhost:8080/manager/text</deploy.addr>
 
         <!-- Common libs -->
         <commons.io.version>2.5</commons.io.version>
         <spring.bom.version>4.2.5.RELEASE</spring.bom.version>
-        <spring.boot.version>1.3.5.RELEASE</spring.boot.version>
         <commons.lang3.version>3.4</commons.lang3.version>
         <gson.version>2.7</gson.version>
-        <jackson.databind.version>2.6.5</jackson.databind.version>
         <urlrewritefilter.version>4.0.4</urlrewritefilter.version>
-
-        <swagger.version>2.9.2</swagger.version>
-        <docker.user>dsone</docker.user>
-        <docker.image.name>phantom-conversion</docker.image.name>
-        <docker.image.tag>${project.version}</docker.image.tag>
-        <aws.account.id>391292943957</aws.account.id>
-        <aws.region>ap-southeast-1</aws.region>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.neospot.conversion</groupId>
+            <artifactId>file-conversion-config</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.1</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -49,6 +64,7 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -71,6 +87,12 @@
                 <groupId>org.codehaus.janino</groupId>
                 <artifactId>janino</artifactId>
                 <version>3.0.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>19.0</version>
             </dependency>
 
             <dependency>
@@ -118,79 +140,35 @@
                 <version>${urlrewritefilter.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>1.2.58</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.databind.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger-ui</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>20.0</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
-
-    <distributionManagement>
-        <!--<repository>
-            <id>tomcatServer</id>
-            <url>http://localhost:8080/manager/text</url>
-        </repository>-->
-        <!--<repository>-->
-            <!--<id>dhp</id>-->
-            <!--<name>dhp-release</name>-->
-            <!--<url>http://10.200.107.56:8081/artifactory/libs-release-local</url>-->
-        <!--</repository>-->
-        <!--<snapshotRepository>-->
-            <!--<id>dhp</id>-->
-            <!--<name>dhp-snapshot</name>-->
-            <!--<url>http://10.200.107.56:8081/artifactory/libs-snapshot-local</url>-->
-        <!--</snapshotRepository>-->
-    </distributionManagement>
 
     <repositories>
 
         <!--<repository>-->
-            <!--<id>dh-repo</id>-->
-            <!--<url>http://10.200.107.56:8081/artifactory/repo</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-                <!--<updatePolicy>daily</updatePolicy>-->
-            <!--</snapshots>-->
+        <!--<id>dh-repo</id>-->
+        <!--<url>http://10.200.107.56:8081/artifactory/repo</url>-->
+        <!--<snapshots>-->
+        <!--<enabled>false</enabled>-->
+        <!--<updatePolicy>daily</updatePolicy>-->
+        <!--</snapshots>-->
         <!--</repository>-->
         <!--<repository>-->
-            <!--<id>Maven2</id>-->
-            <!--<name>Maven2-releases</name>-->
-            <!--<url>http://maven.derbysoft.tm/artifactory/libs-release-local</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
+        <!--<id>Maven2</id>-->
+        <!--<name>Maven2-releases</name>-->
+        <!--<url>http://maven.derbysoft.tm/artifactory/libs-release-local</url>-->
+        <!--<snapshots>-->
+        <!--<enabled>false</enabled>-->
+        <!--</snapshots>-->
         <!--</repository>-->
 
         <!--<repository>-->
-            <!--<id>derbysoft</id>-->
-            <!--<name>Maven2-releases</name>-->
-            <!--<url>http://10.200.107.43/artifactory/libs-release-local</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
+        <!--<id>derbysoft</id>-->
+        <!--<name>Maven2-releases</name>-->
+        <!--<url>http://10.200.107.43/artifactory/libs-release-local</url>-->
+        <!--<snapshots>-->
+        <!--<enabled>false</enabled>-->
+        <!--</snapshots>-->
         <!--</repository>-->
 
         <repository>
@@ -222,14 +200,14 @@
     </repositories>
 
     <pluginRepositories>
-        <!--<pluginRepository>-->
-            <!--<id>derbysoft-plugins</id>-->
-            <!--<name>Spring Snapshots</name>-->
-            <!--<url>http://10.200.107.56:8081/artifactory/repo/</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-        <!--</pluginRepository>-->
+        <pluginRepository>
+            <id>derbysoft-plugins</id>
+            <name>Spring Snapshots</name>
+            <url>http://10.200.107.56:8081/artifactory/repo/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
         <pluginRepository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
@@ -245,6 +223,17 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
+        <!--<pluginRepository>-->
+        <!--<id>oschina-plugins</id>-->
+        <!--<name>oschina-plugin-repo</name>-->
+        <!--<url>http://maven.oschina.net/content/groups/public/</url>-->
+        <!--<releases>-->
+        <!--<enabled>true</enabled>-->
+        <!--</releases>-->
+        <!--<snapshots>-->
+        <!--<enabled>false</enabled>-->
+        <!--</snapshots>-->
+        <!--</pluginRepository>-->
     </pluginRepositories>
 
     <build>
@@ -298,7 +287,7 @@
                     <port>${server.port}</port>
                     <url>${deploy.addr}</url>
                     <server>tomcatServer</server>
-                    <username>dsone</username>
+                    <username>neo</username>
                     <password>password</password>
                 </configuration>
             </plugin>
@@ -318,7 +307,7 @@
                         <port>${server.port}</port>
                     </httpConnector>
 
-                    <stopPort>9967</stopPort>
+                    <stopPort>9966</stopPort>
                     <stopKey>jetty-stop</stopKey>
                 </configuration>
 
@@ -363,6 +352,5 @@
             </resource>
         </resources>
     </build>
-
 
 </project>

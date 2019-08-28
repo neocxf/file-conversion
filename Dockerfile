@@ -4,7 +4,7 @@ MAINTAINER "neo.chen <neocxf@gmail.com>"
 
 WORKDIR /app
 
-ADD dsone-fileserver-boot/target/dsone-fileserver-boot.jar fileserver.jar
+ADD dsone-fileserver-boot/target/file-conversion-boot.jar fileserver.jar
 
 RUN sh -c 'touch /app/fileserver.jar'
 
