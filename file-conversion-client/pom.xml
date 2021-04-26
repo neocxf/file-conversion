@@ -18,7 +18,7 @@
         <deploy.addr>http://localhost:8080/manager/text</deploy.addr>
 
         <!-- Common libs -->
-        <commons.io.version>2.5</commons.io.version>
+        <commons.io.version>2.7</commons.io.version>
         <spring.bom.version>4.2.5.RELEASE</spring.bom.version>
         <commons.lang3.version>3.4</commons.lang3.version>
         <gson.version>2.7</gson.version>
